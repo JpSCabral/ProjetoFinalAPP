@@ -1,11 +1,12 @@
 // src/navigation/AppNavigator.tsx
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { HomeScreen } from "../screens/HomeScreen";
-import { RecipesScreen } from "../screens/RecipesScreen";
+import { Feather } from "@expo/vector-icons";
+import { View } from "react-native";
+// import { HomeScreen } from "../screens/HomeScreen";
+// import { RecipesScreen } from "../screens/RecipesScreen";
 // Importe suas outras telas e ícones
 
-// Crie o navegador
 const Tab = createBottomTabNavigator();
 
 export function AppNavigator() {
