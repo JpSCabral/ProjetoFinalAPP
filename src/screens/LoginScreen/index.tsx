@@ -8,10 +8,42 @@ import { Styles } from "./Styles";
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
+  const handlePasswordChange = (password: string) => {
+    setPassword(password); // Atualiza o estado da senha
+
+    if (password.length > 0 && password.length < 8) {
+      setPasswordErrorMessage("A senha deve ter no mínimo 8 caracteres.");
+      setIsPasswordValid(false);
+    } else {
+      setPasswordErrorMessage("");
+      setIsPasswordValid(true);
+    }
+  };
+
+  const handleEmailChange = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setEmail(email);
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Por favor, insira um email válido.");
+      setIsValidEmail(false);
+    } else {
+      setErrorMessage("");
+      setIsValidEmail(true);
+    }
+  };
 
   const handleLogin = () => {
-    console.log("E-mail digitado:", email);
-    console.log("Senha digitada:", password);
+    if (isValidEmail) {
+      console.log("E-mail digitado:", email);
+      console.log("Senha digitada:", password);
+    } else {
+      setErrorMessage("Por favor, insira um email válido.");
+    }
   };
 
   return (
@@ -22,40 +54,34 @@ export default function LoginScreen() {
       <InputField
         texto="E-mail"
         textoPlace="Enter your e-mail"
-        textoBaixo="Please enter a valid email. e.g.: user@example.com"
+        textoBaixo={
+          errorMessage
+            ? errorMessage
+            : "Please enter a valid email. e.g.: user@example.com"
+        }
         value={email}
-        onChangeText={setEmail}
+        onChangeText={handleEmailChange}
         keyboardType="email-address"
+        errorMessage={errorMessage}
+        isValid={isValidEmail}
       />
 
       <InputField
         texto="Password"
         textoPlace="Enter your password"
-        textoBaixo="Please enter a valid password: - Minimum 8 characters, one..."
+        textoBaixo={
+          passwordErrorMessage
+            ? passwordErrorMessage
+            : "A senha deve ter no mínimo 8 caracteres."
+        }
         value={password}
-        onChangeText={setPassword}
+        onChangeText={handlePasswordChange}
         secure={true}
+        isValid={isPasswordValid}
       />
 
       <View style={Styles.buttonSection}>
-        <Button
-          title="Login with E-mail"
-          color="#000000"
-          icon="mail"
-          onPress={handleLogin}
-        />
-        <Button
-          title="Login with Facebook"
-          color="#1877F2"
-          icon="facebook-f"
-          onPress={() => console.log("Login com Facebook")}
-        />
-        <Button
-          title="Login with Google"
-          color="#EA4335"
-          icon="google"
-          onPress={() => console.log("Login com Google")}
-        />
+        <Button title="Login" color="#000000" icon="" onPress={handleLogin} />
       </View>
 
       <Text style={Styles.signupText}>

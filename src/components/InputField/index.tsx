@@ -1,5 +1,4 @@
 import { Text, View, TextInput, TextInputProps } from "react-native";
-import { Component } from "react";
 import { Style } from "./Styles";
 
 interface Props extends TextInputProps {
@@ -7,6 +6,8 @@ interface Props extends TextInputProps {
   textoPlace: string;
   textoBaixo: string;
   secure?: boolean;
+  errorMessage?: string;
+  isValid?: boolean;
 }
 
 export default function InputField({
@@ -14,17 +15,24 @@ export default function InputField({
   textoPlace,
   textoBaixo,
   secure,
+  errorMessage,
+  isValid = true,
   ...rest
 }: Props) {
   return (
-    <View style={Style.container}>
+    <View style={Style.componentContainer}>
       <Text style={Style.textTop}>{texto}</Text>
-      <TextInput
-        style={Style.textPlace}
-        placeholder={textoPlace}
-        secureTextEntry={secure}
-        {...rest}
-      />
+
+      <View style={[Style.inputContainer, !isValid ? Style.inputError : null]}>
+        <TextInput
+          style={Style.textInput}
+          placeholder={textoPlace}
+          placeholderTextColor="#888"
+          secureTextEntry={secure}
+          {...rest}
+        />
+      </View>
+
       <Text style={Style.textBottom}>{textoBaixo}</Text>
     </View>
   );

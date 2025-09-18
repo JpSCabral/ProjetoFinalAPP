@@ -2,7 +2,7 @@ import React from "react";
 import { TouchableOpacity, TouchableOpacityProps, Text } from "react-native";
 import { styles } from "./styles";
 import { IconName } from "@/helpers/iconNames";
-import { Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 type Props = TouchableOpacityProps & {
   title: string;
@@ -16,7 +16,7 @@ export function Button({ title, color, icon, ...rest }: Props) {
       style={[styles.button, { backgroundColor: color }]}
       {...rest}
     >
-      <Feather name={icon} size={24} color="#FFF" />
+      <FontAwesome name={icon} size={24} color="#FFF" />
       <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   );

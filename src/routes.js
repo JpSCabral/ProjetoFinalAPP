@@ -1,4 +1,3 @@
-// src/routes.js
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Linking from "expo-linking";
@@ -7,7 +6,7 @@ import HomeScreen from "@/screens/HomeScreen";
 // import DetailsScreen from "./DetailsScreen";
 import LoginScreen from "@/screens/LoginScreen";
 
-const prefix = Linking.createURL("/"); // Cria a URL base (ex: http://localhost:19006/)
+const prefix = Linking.createURL("/");
 const Stack = createNativeStackNavigator();
 
 function Routes() {

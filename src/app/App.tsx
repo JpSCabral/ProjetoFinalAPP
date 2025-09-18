@@ -11,11 +11,7 @@ import mealIcon from "@/assets/icons/mealicon.svg";
 import appleIcon from "@/assets/icons/food-apple.svg";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Routes />
-    </View>
-  );
+  return <Routes />;
 }
 
 const styles = StyleSheet.create({

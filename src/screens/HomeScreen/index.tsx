@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, ScrollView, View } from "react-native";
 import { Button } from "@/components/Button";
 import { ContentArea } from "@/components/ContentArea";
 import { Header } from "@/components/Header";
@@ -26,7 +26,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#df4b4bff",
     alignItems: "center",
     justifyContent: "center",
   },

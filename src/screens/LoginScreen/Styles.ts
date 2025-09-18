@@ -14,7 +14,7 @@ export const Styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   buttonSection: {
-    width: '100%',
+    width: '90%',
     marginTop: 20,
 
   },
@@ -26,5 +26,7 @@ export const Styles = StyleSheet.create({
   signupLink: {
     color: '#1877F2',
     fontWeight: 'bold',
-  }
+  },
+  
+  
 });
