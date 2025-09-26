@@ -1,33 +1,25 @@
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, ScrollView, View } from "react-native";
-import { Button } from "@/components/Button";
 import { ContentArea } from "@/components/ContentArea";
 import { Header } from "@/components/Header";
 import { MealCard } from "@/components/MealCard";
-import Routes from "@/routes";
-
+import { styles } from "./styles";
 import coffeeIcon from "@/assets/icons/coffee.svg";
 import mealIcon from "@/assets/icons/mealicon.svg";
 import appleIcon from "@/assets/icons/food-apple.svg";
+import { AppNavigator } from "@/components/Navegator";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <Header />
-      <ContentArea />
-      <MealCard description="152kcal" icon={coffeeIcon} title="Café da manha" />
-      <MealCard description="180kcal" icon={mealIcon} title="Almoço" />
-      <MealCard description="200kcal" icon={appleIcon} title="Lanche" />
-      <Button title="Entrar" color="#4CAF50" icon="" />
+      <ScrollView>
+        <ContentArea kcalConsumed={500} kcalGoal={1800} />
+        <MealCard description={256} icon={coffeeIcon} title="Café da manha" />
+        <MealCard description={486} icon={mealIcon} title="Almoço" />
+        <MealCard description={400} icon={appleIcon} title="Lanche" />
+        <MealCard description={400} icon={mealIcon} title="Jantar" />
+      </ScrollView>
+      <AppNavigator />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#df4b4bff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

@@ -14,7 +14,7 @@ export default function LoginScreen() {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 
   const handlePasswordChange = (password: string) => {
-    setPassword(password); // Atualiza o estado da senha
+    setPassword(password); 
 
     if (password.length > 0 && password.length < 8) {
       setPasswordErrorMessage("A senha deve ter no mínimo 8 caracteres.");

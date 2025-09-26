@@ -5,7 +5,7 @@ import { styles } from "./styles";
 
 interface MealCardProps {
   title: string;
-  description: string;
+  description: number;
   icon: React.FC<SvgProps>;
 }
 
@@ -24,12 +24,11 @@ export function MealCard({
       {/* View para os Textos */}
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.description}>{description} kcal</Text>
       </View>
 
-      {/* Botão de Adicionar */}
       <TouchableOpacity style={styles.addButton}>
-        <Feather name="plus" size={24} color="#333638" />
+        <Feather name="arrow-right" size={24} color="#333638" />
       </TouchableOpacity>
     </View>
   );

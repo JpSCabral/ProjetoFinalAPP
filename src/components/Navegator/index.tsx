@@ -3,7 +3,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { View } from "react-native";
-// import { HomeScreen } from "../screens/HomeScreen";
+import HomeScreen from "@/screens/HomeScreen";
 // import { RecipesScreen } from "../screens/RecipesScreen";
 // Importe suas outras telas e ícones
 
@@ -28,7 +28,7 @@ export function AppNavigator() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Add"
         component={AddScreen}
         options={{
@@ -56,7 +56,7 @@ export function AppNavigator() {
             <Feather name="book-open" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
       {/* ...outras telas como "Plans" */}
     </Tab.Navigator>
   );
