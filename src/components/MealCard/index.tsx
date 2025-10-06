@@ -7,12 +7,14 @@ interface MealCardProps {
   title: string;
   description: number;
   icon: React.FC<SvgProps>;
+  onPress?: () => void;
 }
 
 export function MealCard({
   title,
   description,
   icon: IconComponent,
+  onPress,
 }: MealCardProps) {
   return (
     <View style={styles.container}>
@@ -27,7 +29,7 @@ export function MealCard({
         <Text style={styles.description}>{description} kcal</Text>
       </View>
 
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity style={styles.addButton} onPress={onPress}>
         <Feather name="arrow-right" size={24} color="#333638" />
       </TouchableOpacity>
     </View>
