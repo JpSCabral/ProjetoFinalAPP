@@ -45,7 +45,7 @@ export default function LoginScreen({ onLogin }: Props) {
     console.log("Simulando login...");
     // ...lógica de validação do login...
     // Se deu tudo certo:
-    onLogin(); // Chama a função que veio lá do App.tsx!
+    onLogin();
   }
 
   return (
