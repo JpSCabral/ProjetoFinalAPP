@@ -1,9 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { styles } from "./Styles";
+import { styles } from './styles'
 
 export function ProfileScreen() {
-  // In the future, you can replace these with dynamic user data from Supabase
   const user = {
     name: "John Doe",
     email: "john@example.com",

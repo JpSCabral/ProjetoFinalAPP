@@ -43,6 +43,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 
 import { HomeScreen } from "@/screens/HomeScreen";
+import { ShopList } from "@/screens/ShopList"
 import { ProfileScreen } from "@/screens/Profile"
 // import { ProfileScreen } from "@/screens/ProfileScreen";
 
@@ -66,6 +67,15 @@ export function AppRoutes() {
               options={{
                 tabBarIcon: ({ color, size }) => (
                   <Feather name="user" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="ShopList"
+              component={ShopList}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Feather name="box" color={color} size={size} />
                 ),
               }}
             />
