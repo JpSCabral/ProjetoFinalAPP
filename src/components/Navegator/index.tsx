@@ -3,7 +3,8 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { View } from "react-native";
-import HomeScreen from "@/screens/HomeScreen";
+import { HomeScreen } from "@/screens/HomeScreen";
+import { ProfileScreen } from "@/screens/Profile"
 // import { RecipesScreen } from "../screens/RecipesScreen";
 // Importe suas outras telas e ícones
 
@@ -20,11 +21,20 @@ export function AppNavigator() {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="home"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="user" color={color} size={size} />
           ),
         }}
       />
