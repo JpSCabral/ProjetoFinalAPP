@@ -1,5 +1,6 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React from "react";
+import { NavigationContainer, LinkingOptions } from "@react-navigation/native";
+import { createNativeStackNavigator, NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import * as Linking from "expo-linking";
 
 import HomeScreen from "@/screens/HomeScreen";
@@ -7,11 +8,20 @@ import HomeScreen from "@/screens/HomeScreen";
 import LoginScreen from "@/screens/LoginScreen";
 import InitialScreen from "@/screens/InitialScreen";
 
-const prefix = Linking.createURL("/");
-const Stack = createNativeStackNavigator();
+// Define the type for your stack's params
+export type RootStackParamList = {
+  Home: undefined;
+  Details: undefined;
+  Login: undefined;
+  Initial: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function Routes() {
-  const linking = {
+  const prefix = Linking.createURL("/");
+
+  const linking: LinkingOptions<RootStackParamList> = {
     prefixes: [prefix],
     config: {
       screens: {
@@ -23,9 +33,13 @@ function Routes() {
     },
   };
 
+  const screenOptions: NativeStackNavigationOptions = {
+    headerShown: false,
+  };
+
   return (
     <NavigationContainer linking={linking}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={screenOptions}>
         <Stack.Screen name="Home" component={HomeScreen} />
         {/* <Stack.Screen name="Details" component={DetailsScreen} /> */}
         <Stack.Screen name="Login" component={LoginScreen} />

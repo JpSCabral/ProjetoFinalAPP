@@ -19,7 +19,7 @@ export default function App() {
         <MealCard description={400} icon={appleIcon} title="Lanche" />
         <MealCard description={400} icon={mealIcon} title="Jantar" />
       </ScrollView>
-      <AppNavigator />
+      {/* <AppNavigator /> */}
     </View>
   );
 }
