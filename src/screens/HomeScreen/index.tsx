@@ -6,9 +6,8 @@ import { styles } from "./styles";
 import coffeeIcon from "@/assets/icons/coffee.svg";
 import mealIcon from "@/assets/icons/mealicon.svg";
 import appleIcon from "@/assets/icons/food-apple.svg";
-import { AppNavigator } from "@/components/Navegator";
 
-export default function App() {
+export function HomeScreen() {
   return (
     <View style={styles.container}>
       <Header />
@@ -19,7 +18,7 @@ export default function App() {
         <MealCard description={400} icon={appleIcon} title="Lanche" />
         <MealCard description={400} icon={mealIcon} title="Jantar" />
       </ScrollView>
-      <AppNavigator />
+      {/* <AppNavigator /> */}
     </View>
   );
 }

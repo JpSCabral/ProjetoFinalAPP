@@ -1,24 +1,20 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import { Button } from "../components/Button";
-import { ContentArea } from "../components/ContentArea";
-import { Header } from "../components/Header";
-import { MealCard } from "../components/MealCard";
-import Routes from "@/routes";
+import "react-native-gesture-handler";
+import { useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
 
-import coffeeIcon from "@/assets/icons/coffee.svg";
-import mealIcon from "@/assets/icons/mealicon.svg";
-import appleIcon from "@/assets/icons/food-apple.svg";
+import { AppRoutes } from "@/routes/app.routes";
+import { AuthRoutes } from "@/routes/auth.routes";
 
 export default function App() {
-  return <Routes />;
-}
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+  function handleLogin() {
+    setIsAuthenticated(true);
+  }
+
+  return (
+    <NavigationContainer>
+      {isAuthenticated ? <AppRoutes /> : <AuthRoutes onLogin={handleLogin} />}
+    </NavigationContainer>
+  );
+}

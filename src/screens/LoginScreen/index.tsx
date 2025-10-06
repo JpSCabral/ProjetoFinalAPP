@@ -5,7 +5,11 @@ import InputField from "@/components/InputField";
 import { Button } from "@/components/Button";
 import { Styles } from "./Styles";
 
-export default function LoginScreen() {
+type Props = {
+  onLogin: () => void;
+};
+
+export default function LoginScreen({ onLogin }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -14,7 +18,7 @@ export default function LoginScreen() {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 
   const handlePasswordChange = (password: string) => {
-    setPassword(password); 
+    setPassword(password);
 
     if (password.length > 0 && password.length < 8) {
       setPasswordErrorMessage("A senha deve ter no mínimo 8 caracteres.");
@@ -37,14 +41,12 @@ export default function LoginScreen() {
     }
   };
 
-  const handleLogin = () => {
-    if (isValidEmail) {
-      console.log("E-mail digitado:", email);
-      console.log("Senha digitada:", password);
-    } else {
-      setErrorMessage("Por favor, insira um email válido.");
-    }
-  };
+  function handleSignIn() {
+    console.log("Simulando login...");
+    // ...lógica de validação do login...
+    // Se deu tudo certo:
+    onLogin(); // Chama a função que veio lá do App.tsx!
+  }
 
   return (
     <SafeAreaView style={Styles.container}>
@@ -81,7 +83,7 @@ export default function LoginScreen() {
       />
 
       <View style={Styles.buttonSection}>
-        <Button title="Login" color="#000000" icon="" onPress={handleLogin} />
+        <Button title="Login" color="#000000" icon="" onPress={handleSignIn} />
       </View>
 
       <Text style={Styles.signupText}>
