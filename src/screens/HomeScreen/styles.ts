@@ -25,6 +25,25 @@ export const styles = StyleSheet.create({
   shadowRadius: 4,
   elevation: 5, // Para Android
   },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  modalText: {
+    fontSize: 16,
+    color: "#444",
+    marginBottom: 5,
+    textAlign: "center",
+  },
+   closeButton: {
+    marginTop: 20,
+    color: "#E85D5D",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 centeredView: {
   flex: 1, // Ocupa a tela toda
   justifyContent: 'center', // Centraliza na vertical
