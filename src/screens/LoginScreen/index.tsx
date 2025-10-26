@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import InputField from "@/components/InputField";
 import { Button } from "@/components/Button";
 import { Styles } from "./Styles";
+import { signUp } from "@/api/supabase"
 
 type Props = {
   onLogin: () => void;
@@ -41,12 +42,25 @@ export default function LoginScreen({ onLogin }: Props) {
     }
   };
 
-  function handleSignIn() {
-    console.log("Simulando login...");
-    // ...lógica de validação do login...
-    // Se deu tudo certo:
-    onLogin();
+  async function handleSignIn() {
+    if (!isValidEmail || !isPasswordValid) return;
+  
+    try {
+      const result = await signUp(email, password);
+  
+      if (result.error) {
+        console.error("Erro no cadastro:", result.error.message);
+        setErrorMessage(result.error.message || "Erro desconhecido ao cadastrar.");
+      } else  {
+        console.log("Cadastro bem-sucedido:", result.email);
+        onLogin(); // proceed to next screen
+      }
+    } catch (error) {
+      console.error("Erro inesperado:", error);
+      setErrorMessage("Erro inesperado ao cadastrar.");
+    }
   }
+  
 
   return (
     <SafeAreaView style={Styles.container}>

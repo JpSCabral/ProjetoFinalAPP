@@ -1,6 +1,7 @@
 import "react-native-gesture-handler";
 import { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { signUp } from "@/api/supabase"
 
 import { AppRoutes } from "@/routes/app.routes";
 import { AuthRoutes } from "@/routes/auth.routes";
