@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { MealButton } from "@/components/MealButton";
 import coffeeIcon from "@/assets/icons/coffee.svg";
 import mealIcon from "@/assets/icons/mealicon.svg";
@@ -6,20 +6,23 @@ import appleIcon from "@/assets/icons/food-apple.svg";
 import { ProgressCard } from "@/components/ProgressCard";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
-import { AddMealScreenNavigationProp } from "@/routes/addMeal.stack.routes"; // <-- Verifique o caminho do import
+import { AddMealScreenNavigationProp } from "@/routes/addMeal.stack.routes";
 
 export default function AddMeal() {
   const navigation = useNavigation<AddMealScreenNavigationProp>();
+
   function handleLogMeal() {
     navigation.navigate("log");
   }
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.titleContainer}>
-        <Text>Refeição</Text>
-        <Text>Kcal</Text>
+        <Text style={styles.title}>Refeição</Text>
+        <Text style={styles.title}>Kcal</Text>
       </View>
-      <View>
+
+      <View style={styles.mealList}>
         <MealButton
           icon={coffeeIcon}
           title="Café da manhã"
@@ -51,10 +54,10 @@ export default function AddMeal() {
           onPress={handleLogMeal}
         />
       </View>
-      <Text>Resumo</Text>
-      <View style={styles.container}>
-        <ProgressCard currentKcal={568} goalValue={1800} />
-      </View>
-    </View>
+
+      <Text style={styles.sectionTitle}>Resumo</Text>
+
+      <ProgressCard currentKcal={568} goalValue={1800} />
+    </ScrollView>
   );
 }
