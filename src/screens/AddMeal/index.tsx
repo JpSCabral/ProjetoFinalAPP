@@ -8,7 +8,8 @@ import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
 import { AddMealScreenNavigationProp } from "@/routes/addMeal.stack.routes";
 
-export default function AddMeal() {
+export default function AddMeal() { 
+  //Componente pra adicionar Nova refeição
   const navigation = useNavigation<AddMealScreenNavigationProp>();
 
   function handleLogMeal() {
