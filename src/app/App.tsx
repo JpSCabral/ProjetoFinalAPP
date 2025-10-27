@@ -1,6 +1,7 @@
 import "react-native-gesture-handler";
 import { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { DiaryProvider } from "@/contexts/DiaryContext";
 
 import { AppRoutes } from "@/routes/app.routes";
 import { AuthRoutes } from "@/routes/auth.routes";
@@ -14,7 +15,13 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <AppRoutes /> : <AuthRoutes onLogin={handleLogin} />}
+      {isAuthenticated ? (
+        <DiaryProvider>
+          <AppRoutes />
+        </DiaryProvider>
+      ) : (
+        <AuthRoutes onLogin={handleLogin} />
+      )}
     </NavigationContainer>
   );
 }

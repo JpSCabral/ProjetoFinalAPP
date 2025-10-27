@@ -1,45 +1,61 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    flexDirection: 'row',      
-    alignItems: 'center',       
-    backgroundColor: '#F0EBE8', 
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: '#dededeff',
+container: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF', // Fundo branco puro
     borderRadius: 12,
     padding: 16,
-    marginBottom: 12,           
+    marginHorizontal: 16,
+    marginVertical: 8,
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   iconContainer: {
-    width: 50,
-    height: 50,
+    // Estilos base para o container do ícone
     borderRadius: 25,
-    backgroundColor: '#FFFFFF', // Fundo branco para o círculo do ícone
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,            // Espaço entre o ícone e o texto
+    padding: 10,
+    marginRight: 16,
   },
-  textContainer: {
-    flex: 1,                    // Faz o container de texto ocupar o espaço disponível
+  iconContainerEmpty: {
+    borderRadius: 25,
+    backgroundColor: '#F0F0F0', 
   },
-  title: {
+  iconContainerFilled: {
+    borderRadius: 25,
+    backgroundColor: '#34D399', 
+  },
+  infoContainer: {
+    flex: 1, // Faz esta View ocupar todo o espaço restante
+  },
+  mealName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333638',
+    fontWeight: '600',
+    color: '#333',
   },
-  description: {
-    fontSize: 14,
-    color: '#5f5f5f',
+  calories: {
+    // Estilo base para as calorias
+    fontSize: 16,
+    color: '#555',
+    marginTop: 4,
+  },
+  caloriesFilled: {
+    // Estilo extra para calorias quando calories > 0
+    color: '#333',
+    fontWeight: '600',
+  },
+  macros: {
+    fontSize: 12,
+    color: '#777',
+    marginTop: 6,
   },
   addButton: {
-    width: 40,
-    height: 40,
+    padding: 8,
     borderRadius: 20,
-    backgroundColor: '#E6DFDC', // Cor de fundo do botão de adicionar
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#E0EFFF', // Fundo azul claro para o botão
   },
 });

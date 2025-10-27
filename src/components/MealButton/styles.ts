@@ -3,11 +3,10 @@ import {StyleSheet} from 'react-native';
 export const styles = StyleSheet.create({   
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
         padding: 8,
     },
     button: {
-        backgroundColor: '#E5E5E5',
+        backgroundColor: '#fff',
         borderStyle: 'solid',
         borderWidth: 1,
         borderColor: '#000',

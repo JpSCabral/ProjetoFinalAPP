@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { View } from "react-native";
 import { HomeScreen } from "@/screens/HomeScreen";
-import { ProfileScreen } from "@/screens/Profile"
+import { ProfileScreen } from "@/screens/ProfileScreen";
 // import { RecipesScreen } from "../screens/RecipesScreen";
 // Importe suas outras telas e ícones
 

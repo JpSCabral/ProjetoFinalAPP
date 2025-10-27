@@ -1,31 +1,42 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import { Feather } from "@expo/vector-icons"; // ou seus SVGs
+import { View, Text, TouchableOpacity } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+// 1. IMPORTE O TIPO DE NAVEGAÇÃO QUE CRIAMOS
+import { AppTabNavigationProp } from "@/routes/app.routes"; // Ajuste o caminho
+
 import { styles } from "./styles";
-import Logo from "@/assets/logo.png";
 
 export function Header() {
+  // 2. PEGUE O "PADDING" DO TOPO DA TELA (PARA A BARRA DE STATUS)
+  const { top } = useSafeAreaInsets();
+
+  // 3. PEGUE O CONTROLE DE NAVEGAÇÃO
+  // Usamos o tipo da "Tab" (footer) porque queremos navegar entre as abas.
+  const navigation = useNavigation<AppTabNavigationProp>();
+
+  // 4. CRIE A FUNÇÃO DE NAVEGAÇÃO
+  function handleNavigateToProfile() {
+    // 'Profile' deve ser o nome exato da sua aba no app.routes.tsx
+    navigation.navigate("EditProfile");
+  }
+
   return (
-    <View style={styles.container}>
-      <View style={styles.topRow}>
-        <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>My diet</Text>
-        </View>
-        <View>
-          <Feather name="user" size={32} color="#000" />
-        </View>
-        {/* <Image
-          source={{ uri: "https://caminho-para-sua-imagem.com/avatar.png" }}
-          style={styles.avatar}
-        /> */}
-      </View>
+    // 5. APLICAMOS O PADDING DO TOPO DINAMICAMENTE
+    // Adicionamos +16 para um respiro extra.
+    <View style={[styles.container, { paddingTop: top + 16 }]}>
+      {/* Texto com melhor contraste */}
+      <Text style={styles.logoText}>My diet</Text>
+
+      {/* Botão funcional com melhor contraste e área de clique */}
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={handleNavigateToProfile}
+      >
+        <Feather name="user" size={28} color="#FFF" />
+      </TouchableOpacity>
     </View>
   );
 }

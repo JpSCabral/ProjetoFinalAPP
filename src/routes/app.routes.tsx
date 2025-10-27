@@ -1,20 +1,48 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  createBottomTabNavigator,
+  BottomTabNavigationProp,
+} from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 
-import { HomeScreen } from "@/screens/HomeScreen";
+// Pilhas de navegação
+import { HomeRoutes } from "./home.stack.routes";
+import { ProfileRoutes } from "./profile.stack.routes";
+
+// Telas de aba "únicas"
 import { ShopList } from "@/screens/ShopList";
-import { ProfileScreen } from "@/screens/Profile";
-// import { ProfileScreen } from "@/screens/ProfileScreen";
-import { AddMealRoutes } from "./addMeal.stack.routes";
+import { StatsScreen } from "@/screens/StatsScreen"; // (Tela nova para "Progresso")
 
-const Tab = createBottomTabNavigator();
+export type AppTabParamList = {
+  Home: undefined;
+  Profile: undefined;
+  ShopList: undefined;
+  Adicionar: undefined;
+  EditProfile: undefined;
+  Stats: undefined;
+  // Adicione as outras abas...
+};
 
+const Tab = createBottomTabNavigator<AppTabParamList>();
+
+export type AppTabNavigationProp = BottomTabNavigationProp<AppTabParamList>;
 export function AppRoutes() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 64,
+          paddingTop: 12, // Dê um padding superior
+          paddingBottom: 12, // E inferior
+          backgroundColor: "#4C763B",
+        },
+        tabBarActiveTintColor: "#FFFFFF", // Ícone ativo fica BRANCO
+        tabBarInactiveTintColor: "rgba(255, 255, 255, 0.5)", // Inativo fica Branco 50%
+      }}
+    >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeRoutes}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="home" color={color} size={size} />
@@ -23,7 +51,7 @@ export function AppRoutes() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileRoutes}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="user" color={color} size={size} />
@@ -40,11 +68,11 @@ export function AppRoutes() {
         }}
       />
       <Tab.Screen
-        name="Adicionar"
-        component={AddMealRoutes}
+        name="Stats"
+        component={StatsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Feather name="plus" color={color} size={size} />
+            <Feather name="box" color={color} size={size} />
           ),
         }}
       />
