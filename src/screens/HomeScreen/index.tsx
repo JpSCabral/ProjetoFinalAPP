@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Modal,
   ScrollView,
@@ -13,11 +13,12 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
-  Coffee,
-  ForkKnife,
-  AppleLogo,
-  Plus,
-  Trash,
+  CoffeeIcon,
+  ForkKnifeIcon,
+  AppleLogoIcon,
+  PlusIcon,
+  TrashIcon,
+  PlugsIcon,
 } from "phosphor-react-native";
 
 // Imports internos
@@ -30,10 +31,10 @@ import { MealType } from "@/types";
 import { COLORS, SPACING } from "@/constants/theme";
 
 const MEAL_SECTIONS: { id: MealType; label: string; icon: any }[] = [
-  { id: "Café da manha", label: "Café da manhã", icon: Coffee },
-  { id: "Almoço", label: "Almoço", icon: ForkKnife },
-  { id: "Lanche", label: "Lanche", icon: AppleLogo },
-  { id: "Jantar", label: "Jantar", icon: ForkKnife },
+  { id: "Café da manha", label: "Café da manhã", icon: CoffeeIcon },
+  { id: "Almoço", label: "Almoço", icon: ForkKnifeIcon },
+  { id: "Lanche", label: "Lanche", icon: AppleLogoIcon },
+  { id: "Jantar", label: "Jantar", icon: ForkKnifeIcon },
 ];
 
 // Helper de Data
@@ -226,7 +227,7 @@ export default function HomeScreen() {
                       style={styles.deleteButton}
                       onPress={() => handleRemoveItem(item.id)}
                     >
-                      <Trash size={20} color={COLORS.danger} />
+                      <TrashIcon size={20} color={COLORS.danger} />
                     </TouchableOpacity>
                   </View>
                 </TouchableOpacity>
@@ -240,7 +241,7 @@ export default function HomeScreen() {
                 if (selectedMeal) handleAddFood(selectedMeal);
               }}
             >
-              <Plus size={20} color="#FFF" style={{ marginRight: 8 }} />
+              <PlugsIcon size={20} color="#FFF" style={{ marginRight: 8 }} />
               <Text style={styles.addButtonText}>Adicionar</Text>
             </TouchableOpacity>
           </Pressable>

@@ -12,41 +12,70 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Envelope, Lock, ArrowLeft } from "phosphor-react-native";
+import { EnvelopeIcon, LockIcon, ArrowLeftIcon } from "phosphor-react-native";
+import { signUp } from "@/api/supabase";
 
-// Importando o tema do app
 import { COLORS, SPACING } from "@/constants/theme";
+type Props = {
+  onLogin: () => void;
+};
 
-export default function LoginScreen() {
+export default function LoginScreen({ onLogin }: Props) {
   const navigation = useNavigation<any>();
 
   // Estados
+  const [isLoading, setIsLoading] = useState(false); // Para simular o carregamento
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Para simular o carregamento
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 
-  const handleLogin = () => {
-    // 1. Validação Básica
-    if (!email || !password) {
-      return Alert.alert("Atenção", "Por favor, preencha e-mail e senha.");
+  const handlePasswordChange = (password: string) => {
+    setPassword(password);
+
+    if (password.length > 0 && password.length < 8) {
+      setPasswordErrorMessage("A senha deve ter no mínimo 8 caracteres.");
+      setIsPasswordValid(false);
+    } else {
+      setPasswordErrorMessage("");
+      setIsPasswordValid(true);
     }
-
-    if (password.length < 6) {
-      return Alert.alert("Erro", "A senha deve ter no mínimo 6 caracteres.");
-    }
-
-    // 2. Simulação de API (Loading...)
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      // Aqui entraria a lógica real de autenticação (Firebase, API, etc)
-      console.log("Login realizado com sucesso para:", email);
-
-      // 3. Navega para o App Principal (Substitui a tela atual para não voltar pro login)
-      navigation.replace("AppTabs");
-    }, 1500); // Espera 1.5 segundos para dar a sensação de processamento
   };
+
+  const handleEmailChange = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setEmail(email);
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Por favor, insira um email válido.");
+      setIsValidEmail(false);
+    } else {
+      setErrorMessage("");
+      setIsValidEmail(true);
+    }
+  };
+
+  async function handleSignIn() {
+    if (!isValidEmail || !isPasswordValid) return;
+
+    try {
+      const result = await signUp(email, password);
+
+      if (result.error) {
+        console.error("Erro no cadastro:", result.error.message);
+        setErrorMessage(
+          result.error.message || "Erro desconhecido ao cadastrar."
+        );
+      } else {
+        console.log("Cadastro bem-sucedido:", result.email);
+        onLogin(); // proceed to next screen
+      }
+    } catch (error) {
+      console.error("Erro inesperado:", error);
+      setErrorMessage("Erro inesperado ao cadastrar.");
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -62,7 +91,7 @@ export default function LoginScreen() {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <ArrowLeft size={24} color={COLORS.text.primary} />
+          <ArrowLeftIcon size={24} color={COLORS.text.primary} />
         </TouchableOpacity>
 
         {/* Cabeçalho */}
@@ -76,7 +105,7 @@ export default function LoginScreen() {
           {/* Campo E-mail */}
           <Text style={styles.label}>E-mail</Text>
           <View style={styles.inputContainer}>
-            <Envelope size={20} color={COLORS.text.light} />
+            <EnvelopeIcon size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="exemplo@email.com"
@@ -91,7 +120,7 @@ export default function LoginScreen() {
           {/* Campo Senha */}
           <Text style={styles.label}>Senha</Text>
           <View style={styles.inputContainer}>
-            <Lock size={20} color={COLORS.text.light} />
+            <LockIcon size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="******"
@@ -111,7 +140,7 @@ export default function LoginScreen() {
         {/* Botão de Login */}
         <TouchableOpacity
           style={styles.button}
-          onPress={handleLogin}
+          onPress={handleSignIn}
           disabled={isLoading} // Desabilita enquanto carrega
         >
           {isLoading ? (
