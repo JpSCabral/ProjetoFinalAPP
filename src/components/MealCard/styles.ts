@@ -1,61 +1,68 @@
 import { StyleSheet } from "react-native";
+import { COLORS, SPACING } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
-container: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF', // Fundo branco puro
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    alignItems: 'center',
+  container: {
+    backgroundColor: COLORS.card,
+    borderRadius: 16,
+    padding: SPACING.md,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: SPACING.sm, // Espaçamento entre cards
+    // Sombra suave
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: 'transparent', // Preparado para borda se necessário
+  },
+  pressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }]
   },
   iconContainer: {
-    // Estilos base para o container do ícone
-    borderRadius: 25,
-    padding: 10,
-    marginRight: 16,
-  },
-  iconContainerEmpty: {
-    borderRadius: 25,
-    backgroundColor: '#F0F0F0', 
-  },
-  iconContainerFilled: {
-    borderRadius: 25,
-    backgroundColor: '#34D399', 
+    width: 48,
+    height: 48,
+    borderRadius: 24, // Círculo perfeito
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: SPACING.md,
   },
   infoContainer: {
-    flex: 1, // Faz esta View ocupar todo o espaço restante
+    flex: 1,
+    justifyContent: "center",
   },
   mealName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.text.primary,
+    marginBottom: 2,
   },
   calories: {
-    // Estilo base para as calorias
-    fontSize: 16,
-    color: '#555',
-    marginTop: 4,
+    fontSize: 14,
+    fontWeight: "500",
   },
   caloriesFilled: {
-    // Estilo extra para calorias quando calories > 0
-    color: '#333',
-    fontWeight: '600',
+    color: COLORS.text.secondary,
+  },
+  caloriesEmpty: {
+    color: COLORS.text.light,
+    fontStyle: 'italic',
   },
   macros: {
     fontSize: 12,
-    color: '#777',
-    marginTop: 6,
+    color: COLORS.text.light,
+    marginTop: 2,
   },
   addButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: '#E0EFFF', // Fundo azul claro para o botão
+    padding: SPACING.xs,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.background, // Fundo leve no botão +
+    borderRadius: 12,
+    width: 40,
+    height: 40,
   },
 });

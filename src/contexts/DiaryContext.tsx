@@ -1,46 +1,73 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
-import { DiaryEntry, FoodItem, MealType } from "@/types/foods";
+import { DiaryEntry } from "@/types";
 
 interface DiaryContextData {
   entries: DiaryEntry[];
   goal: number;
-  addFoodToDiary: (food: FoodItem, mealType: MealType) => void;
-  deleteFoodFromDiary: (entryId: string) => void;
-  setGoal: (newGoal: number) => void;
+  addEntry: (entry: DiaryEntry) => void;
+  removeEntry: (id: string) => void;
+  replaceEntry: (oldId: string, newEntry: DiaryEntry) => void; // Função de substituir
 }
 
-const DiaryContext = createContext<DiaryContextData | undefined>(undefined);
+const DiaryContext = createContext<DiaryContextData>({} as DiaryContextData);
 
 export function DiaryProvider({ children }: { children: ReactNode }) {
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
-  const [goal, setGoal] = useState(1800);
+  // Meta fixa (pode vir de config depois)
+  const [goal] = useState(2000);
 
-  const addFoodToDiary = (food: FoodItem, mealType: MealType) => {
-    const newEntry: DiaryEntry = {
-      id: String(new Date().getTime()),
-      food: food,
-      mealType: mealType,
-    };
-    setEntries((prevEntries) => [...prevEntries, newEntry]);
-  };
+  // Dados iniciais (Mock) para não abrir o app vazio
+  const today = new Date().toISOString();
+  const [entries, setEntries] = useState<DiaryEntry[]>([
+    {
+      id: "1",
+      date: today,
+      mealType: "Café da manha",
+      food: {
+        id: "f1",
+        name: "Pão Francês",
+        calories: 140,
+        unit: "1 un",
+        protein: 4,
+        carbs: 28,
+        fats: 0,
+      },
+    },
+    {
+      id: "2",
+      date: today,
+      mealType: "Almoço",
+      food: {
+        id: "f2",
+        name: "Frango Grelhado",
+        calories: 160,
+        unit: "150g",
+        protein: 30,
+        carbs: 0,
+        fats: 4,
+      },
+    },
+  ]);
 
-  // 2. CRIE A FUNÇÃO DE DELETAR
-  const deleteFoodFromDiary = (entryId: string) => {
-    setEntries((prevEntries) =>
-      prevEntries.filter((entry) => entry.id !== entryId)
+  // --- 1. ADICIONAR ---
+  function addEntry(newEntry: DiaryEntry) {
+    setEntries((prevState) => [...prevState, newEntry]);
+  }
+
+  // --- 2. REMOVER ---
+  function removeEntry(id: string) {
+    setEntries((prevState) => prevState.filter((item) => item.id !== id));
+  }
+
+  // --- 3. SUBSTITUIR ---
+  function replaceEntry(oldId: string, newEntry: DiaryEntry) {
+    setEntries((prevState) =>
+      prevState.map((item) => (item.id === oldId ? newEntry : item))
     );
-    console.log("Item removido:", entryId);
-  };
+  }
 
   return (
     <DiaryContext.Provider
-      value={{
-        entries,
-        goal,
-        setGoal,
-        addFoodToDiary,
-        deleteFoodFromDiary,
-      }}
+      value={{ entries, goal, addEntry, removeEntry, replaceEntry }}
     >
       {children}
     </DiaryContext.Provider>

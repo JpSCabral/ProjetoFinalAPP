@@ -1,115 +1,181 @@
-// src/screens/ProfileScreen/index.tsx
-
 import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
+  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Alert,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons"; // Para o ícone de Sair
-import { styles } from "./styles";
+import { useNavigation } from "@react-navigation/native";
+import { User, FloppyDisk } from "phosphor-react-native";
+import { COLORS, SPACING } from "@/constants/theme";
 
-// 1. IMPORTE O CONTEXTO
-import { useDiary } from "@/contexts/DiaryContext"; // Ajuste o caminho
+export default function EditProfileScreen() {
+  const navigation = useNavigation();
 
-export function EditProfile() {
-  // 2. PEGUE A META ATUAL E A FUNÇÃO DE ATUALIZAÇÃO DO CONTEXTO
-  const { goal: contextGoal, setGoal: setContextGoal } = useDiary();
+  // Estados locais (simulando dados do usuário)
+  const [name, setName] = useState("Usuário Exemplo");
+  const [email, setEmail] = useState("usuario@email.com");
+  const [weight, setWeight] = useState("75");
+  const [height, setHeight] = useState("175");
+  const [age, setAge] = useState("25");
 
-  // 3. CRIE ESTADOS LOCAIS PARA OS CAMPOS DO FORMULÁRIO
-  // Usamos dados fictícios para o front-end
-  const [name, setName] = useState("Usuário Teste");
-  const [email, setEmail] = useState("usuario@teste.com");
-
-  // O input precisa de 'string', mas o contexto usa 'number'
-  const [localGoal, setLocalGoal] = useState(String(contextGoal));
-
-  // 4. FUNÇÃO DE SALVAR (ENGATILHADA PARA O BACK-END)
-  const handleUpdateProfile = () => {
-    // Converte a meta de volta para número
-    const newGoal = parseInt(localGoal, 10);
-
-    // Validação simples
-    if (isNaN(newGoal) || newGoal <= 0) {
-      Alert.alert("Erro", "Por favor, insira uma meta de calorias válida.");
-      return;
-    }
-
-    // 5. ATUALIZA O CONTEXTO GLOBAL
-    setContextGoal(newGoal);
-
-    // 6. SIMULA A CHAMADA PARA O BACK-END
-    console.log("--- ENVIANDO PARA O BACK-END (Simulação) ---");
-    console.log("Nome:", name);
-    console.log("Email:", email);
-    console.log("Nova Meta:", newGoal);
-    console.log("-------------------------------------------");
-
-    Alert.alert("Sucesso", "Perfil atualizado!");
-  };
-
-  // 7. FUNÇÃO DE LOGOUT (PLACEHOLDER)
-  const handleLogout = () => {
-    console.log("Usuário clicou em Sair");
-    // Aqui você chamaria seu contexto de autenticação (setIsAuthenticated(false))
+  const handleSave = () => {
+    // Aqui você chamaria sua API ou atualizaria o Contexto
+    Alert.alert("Sucesso", "Perfil atualizado!", [
+      { text: "OK", onPress: () => navigation.goBack() },
+    ]);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Meu Perfil</Text>
-
-        {/* --- FORMULÁRIO --- */}
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Nome</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Seu nome completo"
-          />
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Avatar Grande */}
+      <View style={styles.avatarSection}>
+        <View style={styles.avatarContainer}>
+          <User size={60} color={COLORS.primary} weight="duotone" />
         </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            editable={false} // Emails geralmente não são editáveis
-            style={[styles.input, styles.inputDisabled]}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Meta de Calorias Diária (kcal)</Text>
-          <TextInput
-            style={styles.input}
-            value={localGoal}
-            onChangeText={setLocalGoal}
-            keyboardType="numeric"
-            placeholder="Ex: 1800"
-          />
-        </View>
-
-        {/* --- BOTÕES --- */}
-        <TouchableOpacity
-          style={styles.saveButton}
-          onPress={handleUpdateProfile}
-        >
-          <Text style={styles.saveButtonText}>Salvar Alterações</Text>
+        <TouchableOpacity>
+          <Text style={styles.changePhotoText}>Alterar foto</Text>
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Feather name="log-out" size={16} color="#E53E3E" />
-          <Text style={styles.logoutButtonText}>Sair</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
+      {/* Formulário */}
+      <View style={styles.form}>
+        <Text style={styles.label}>Nome Completo</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Seu nome"
+        />
+
+        <Text style={styles.label}>E-mail</Text>
+        <TextInput
+          style={[styles.input, styles.inputDisabled]}
+          value={email}
+          editable={false}
+        />
+
+        {/* Dados Corporais em Grid */}
+        <View style={styles.row}>
+          <View style={styles.halfInput}>
+            <Text style={styles.label}>Peso (kg)</Text>
+            <TextInput
+              style={styles.input}
+              value={weight}
+              onChangeText={setWeight}
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.halfInput}>
+            <Text style={styles.label}>Altura (cm)</Text>
+            <TextInput
+              style={styles.input}
+              value={height}
+              onChangeText={setHeight}
+              keyboardType="numeric"
+            />
+          </View>
+        </View>
+
+        <Text style={styles.label}>Idade</Text>
+        <TextInput
+          style={styles.input}
+          value={age}
+          onChangeText={setAge}
+          keyboardType="numeric"
+        />
+      </View>
+
+      {/* Botão Salvar */}
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={handleSave}
+        activeOpacity={0.8}
+      >
+        <FloppyDisk size={24} color="#FFF" style={{ marginRight: 8 }} />
+        <Text style={styles.saveButtonText}>Salvar Alterações</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  content: {
+    padding: SPACING.lg,
+  },
+  avatarSection: {
+    alignItems: "center",
+    marginBottom: SPACING.xl,
+  },
+  avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.primaryLight,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: SPACING.sm,
+    borderWidth: 4,
+    borderColor: COLORS.card,
+  },
+  changePhotoText: {
+    color: COLORS.secondary,
+    fontWeight: "600",
+  },
+  form: {
+    marginBottom: SPACING.xl,
+  },
+  label: {
+    fontSize: 14,
+    color: COLORS.text.secondary,
+    marginBottom: 6,
+    fontWeight: "500",
+  },
+  input: {
+    backgroundColor: COLORS.card,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 12,
+    borderRadius: 12,
+    fontSize: 16,
+    color: COLORS.text.primary,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  inputDisabled: {
+    backgroundColor: "#E5E5E5",
+    color: COLORS.text.light,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  halfInput: {
+    width: "48%",
+  },
+  saveButton: {
+    backgroundColor: COLORS.primary,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 16,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  saveButtonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+});

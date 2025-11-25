@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { PlusIcon } from "phosphor-react-native";
+import { View, Text, Pressable } from "react-native";
+import { PlusIcon } from "phosphor-react-native"; // Certifique-se de importar o ícone correto
+import { COLORS } from "@/constants/theme";
 import { styles } from "./styles";
 
 interface MealCardProps {
@@ -11,7 +12,6 @@ interface MealCardProps {
   fats?: number;
   onAddPress: () => void;
   onDetailPress: () => void;
-  // O ícone é passado como um elemento React (ex: <CoffeeIcon />)
   icon: React.ReactNode;
 }
 
@@ -27,34 +27,46 @@ export function MealCard(props: MealCardProps) {
     icon,
   } = props;
 
-  // Verifica se temos dados de macros para exibir
   const hasMacros =
     protein !== undefined && carbs !== undefined && fats !== undefined;
-
-  // Verificamos se a refeição tem calorias registradas
   const isFilled = calories > 0;
 
-  // Se estiver preenchido, o fundo do ícone fica verde, senão, cinza.
-  const iconContainerStyle = [
-    styles.iconContainer, // Estilo base
-    isFilled ? styles.iconContainerFilled : styles.iconContainerEmpty, // Estilo condicional
-  ];
+  // Lógica de Cores baseada no estado (Preenchido vs Vazio)
+  const iconBackgroundColor = isFilled ? COLORS.secondary : "#E5E7EB"; // Verde se tiver dados, Cinza se não
+  const iconColor = isFilled ? COLORS.card : COLORS.text.light; // Branco se tiver dados, Cinza escuro se não
 
-  // Clona o elemento do ícone (passado via props) para injetar a cor correta
+  // Clona o ícone para injetar as cores do tema
   const styledIcon = React.cloneElement(icon as React.ReactElement, {
-    color: isFilled ? "#FFFFFF" : "#555",
+    color: iconColor,
     size: 24,
+    weight: isFilled ? "fill" : "regular", // Opcional: ícone preenchido se tiver dados
   });
 
   return (
-    <Pressable style={styles.container} onPress={onDetailPress}>
-      {/* Container do Ícone com estilo condicional */}
-      <View style={iconContainerStyle}>{styledIcon}</View>
+    <Pressable
+      style={({ pressed }) => [
+        styles.container,
+        pressed && styles.pressed, // Efeito visual ao clicar
+      ]}
+      onPress={onDetailPress}
+    >
+      {/* Container do Ícone */}
+      <View
+        style={[styles.iconContainer, { backgroundColor: iconBackgroundColor }]}
+      >
+        {styledIcon}
+      </View>
 
+      {/* Informações Centrais */}
       <View style={styles.infoContainer}>
         <Text style={styles.mealName}>{mealName}</Text>
 
-        <Text style={[styles.calories, isFilled && styles.caloriesFilled]}>
+        <Text
+          style={[
+            styles.calories,
+            isFilled ? styles.caloriesFilled : styles.caloriesEmpty,
+          ]}
+        >
           {calories} kcal
         </Text>
 
@@ -65,8 +77,13 @@ export function MealCard(props: MealCardProps) {
         )}
       </View>
 
-      <Pressable style={styles.addButton} onPress={onAddPress}>
-        <PlusIcon size={24} color="#3B82F6" />
+      {/* Botão de Adicionar (Agora Verde!) */}
+      <Pressable
+        style={({ pressed }) => [styles.addButton, pressed && { opacity: 0.5 }]}
+        onPress={onAddPress}
+        hitSlop={10} // Aumenta a área de toque
+      >
+        <PlusIcon size={24} color={COLORS.secondary} weight="bold" />
       </Pressable>
     </Pressable>
   );

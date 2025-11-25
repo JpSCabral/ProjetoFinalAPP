@@ -1,27 +1,38 @@
-import "react-native-gesture-handler";
-import { useState } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+// Importe o Contexto
 import { DiaryProvider } from "@/contexts/DiaryContext";
 
+// --- IMPORTAÇÕES DAS TELAS ---
+import InitialScreen from "@/screens/InitialScreen";
+import SignUpScreen from "@/screens/SignUpScreen";
+import LoginScreen from "@/screens/LoginScreen";
 import { AppRoutes } from "@/routes/app.routes";
-import { AuthRoutes } from "@/routes/auth.routes";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  function handleLogin() {
-    setIsAuthenticated(true);
-  }
-
   return (
-    <NavigationContainer>
-      {isAuthenticated ? (
+    <SafeAreaProvider>
+      <NavigationContainer>
         <DiaryProvider>
-          <AppRoutes />
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {/* Tela Inicial (Com a imagem de fundo) */}
+            <Stack.Screen name="Initial" component={InitialScreen} />
+
+            {/* --- 2. REGISTRE A TELA DE CADASTRO AQUI --- */}
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+
+            <Stack.Screen name="Login" component={LoginScreen} />
+
+            {/* O App Principal (Tabs) */}
+            <Stack.Screen name="AppTabs" component={AppRoutes} />
+          </Stack.Navigator>
         </DiaryProvider>
-      ) : (
-        <AuthRoutes onLogin={handleLogin} />
-      )}
-    </NavigationContainer>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

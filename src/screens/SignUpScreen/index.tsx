@@ -9,43 +9,44 @@ import {
   Platform,
   ScrollView,
   Alert,
-  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Envelope, Lock, ArrowLeft } from "phosphor-react-native";
+import { User, Envelope, Lock, ArrowLeft } from "phosphor-react-native";
 
-// Importando o tema do app
+// Usando suas cores padrão
 import { COLORS, SPACING } from "@/constants/theme";
 
-export default function LoginScreen() {
+export default function SignUpScreen() {
   const navigation = useNavigation<any>();
 
-  // Estados
+  // Estados do Formulário
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Para simular o carregamento
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleLogin = () => {
-    // 1. Validação Básica
-    if (!email || !password) {
-      return Alert.alert("Atenção", "Por favor, preencha e-mail e senha.");
+  const handleSignUp = () => {
+    // 1. Validação Simples
+    if (!name || !email || !password || !confirmPassword) {
+      return Alert.alert("Erro", "Por favor, preencha todos os campos.");
+    }
+
+    if (password !== confirmPassword) {
+      return Alert.alert("Erro", "As senhas não coincidem.");
     }
 
     if (password.length < 6) {
-      return Alert.alert("Erro", "A senha deve ter no mínimo 6 caracteres.");
+      return Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres.");
     }
 
-    // 2. Simulação de API (Loading...)
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      // Aqui entraria a lógica real de autenticação (Firebase, API, etc)
-      console.log("Login realizado com sucesso para:", email);
-
-      // 3. Navega para o App Principal (Substitui a tela atual para não voltar pro login)
-      navigation.replace("AppTabs");
-    }, 1500); // Espera 1.5 segundos para dar a sensação de processamento
+    // 2. Sucesso (Aqui entraria a chamada ao Backend/Firebase)
+    Alert.alert("Sucesso", "Conta criada com sucesso!", [
+      {
+        text: "OK",
+        // Navega para o App Principal após cadastro
+        onPress: () => navigation.replace("AppTabs"),
+      },
+    ]);
   };
 
   return (
@@ -57,7 +58,7 @@ export default function LoginScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Botão Voltar (Opcional, caso venha da InitialScreen) */}
+        {/* Botão Voltar */}
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
@@ -67,20 +68,31 @@ export default function LoginScreen() {
 
         {/* Cabeçalho */}
         <View style={styles.header}>
-          <Text style={styles.title}>Bem-vindo de volta!</Text>
-          <Text style={styles.subtitle}>Entre para continuar sua dieta.</Text>
+          <Text style={styles.title}>Crie sua conta</Text>
+          <Text style={styles.subtitle}>Comece sua jornada saudável hoje!</Text>
         </View>
 
         {/* Formulário */}
         <View style={styles.form}>
-          {/* Campo E-mail */}
+          {/* Nome */}
+          <Text style={styles.label}>Nome Completo</Text>
+          <View style={styles.inputContainer}>
+            <User size={20} color={COLORS.text.light} />
+            <TextInput
+              style={styles.input}
+              placeholder="Ex: Maria Silva"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
+
+          {/* E-mail */}
           <Text style={styles.label}>E-mail</Text>
           <View style={styles.inputContainer}>
             <Envelope size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="exemplo@email.com"
-              placeholderTextColor={COLORS.text.light}
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
@@ -88,44 +100,43 @@ export default function LoginScreen() {
             />
           </View>
 
-          {/* Campo Senha */}
+          {/* Senha */}
           <Text style={styles.label}>Senha</Text>
           <View style={styles.inputContainer}>
             <Lock size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="******"
-              placeholderTextColor={COLORS.text.light}
               secureTextEntry
               value={password}
               onChangeText={setPassword}
             />
           </View>
 
-          {/* Esqueci minha senha */}
-          <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
-          </TouchableOpacity>
+          {/* Confirmar Senha */}
+          <Text style={styles.label}>Confirmar Senha</Text>
+          <View style={styles.inputContainer}>
+            <Lock size={20} color={COLORS.text.light} />
+            <TextInput
+              style={styles.input}
+              placeholder="******"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+          </View>
         </View>
 
-        {/* Botão de Login */}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleLogin}
-          disabled={isLoading} // Desabilita enquanto carrega
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#FFF" />
-          ) : (
-            <Text style={styles.buttonText}>Entrar</Text>
-          )}
+        {/* Botão de Ação */}
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
 
-        {/* Rodapé: Link para Cadastro */}
+        {/* Link Login */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Não tem conta? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-            <Text style={styles.link}>Cadastrar-se</Text>
+          <Text style={styles.footerText}>Já tem uma conta? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.link}>Entrar</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -136,12 +147,11 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background, // Fundo Bege (#F5F5F4)
+    backgroundColor: COLORS.background,
   },
   scrollContent: {
     padding: SPACING.lg,
-    paddingTop: 60,
-    flexGrow: 1,
+    paddingTop: 60, // Espaço para status bar
   },
   backButton: {
     marginBottom: SPACING.lg,
@@ -156,7 +166,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: COLORS.primary, // Verde Escuro (#3F6212)
+    color: COLORS.primary, // Verde escuro
     marginBottom: 8,
   },
   subtitle: {
@@ -176,7 +186,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.card, // Branco
+    backgroundColor: COLORS.card,
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 56,
@@ -189,23 +199,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.text.primary,
   },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginTop: 12,
-  },
-  forgotPasswordText: {
-    color: COLORS.text.secondary,
-    fontSize: 14,
-  },
   button: {
-    backgroundColor: COLORS.primary, // Verde Escuro (Botão Principal)
+    backgroundColor: COLORS.secondary, // Verde vibrante
     height: 56,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: SPACING.xl,
-    // Sombra
-    shadowColor: COLORS.primary,
+    shadowColor: COLORS.secondary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -213,21 +214,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFF",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
   footer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
   },
   footerText: {
     color: COLORS.text.secondary,
     fontSize: 14,
   },
   link: {
-    color: COLORS.secondary, // Verde Vibrante para links
+    color: COLORS.primary,
     fontWeight: "bold",
     fontSize: 14,
   },

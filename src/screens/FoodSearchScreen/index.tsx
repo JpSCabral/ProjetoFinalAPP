@@ -1,109 +1,219 @@
-import React, { useState, useMemo } from "react";
+import React from "react";
 import {
   View,
-  Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
+  Text,
+  StyleSheet,
+  TextInput,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
-import { HomeStackParamList } from "@/routes/home.stack.routes";
-import { styles } from "./style";
-import { useDiary } from "@/contexts/DiaryContext";
-import { MealType, FoodItem } from "@/types/foods";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { PlusCircleIcon, ArrowsLeftRightIcon } from "phosphor-react-native"; // Icone de troca opcional
 
-// --- DADOS FICTÍCIOS (MOCK) ---
-// No futuro, isso virá de uma API ou banco de dados
-interface FoodItens {
-  id: string;
-  name: string;
-  calories: number;
-  unit: string; // ex: '100g', '1 unidade'
+import { useDiary } from "@/contexts/DiaryContext";
+import { FoodItem, MealType } from "@/types";
+import { COLORS, SPACING } from "@/constants/theme";
+
+interface RouteParams {
+  mealType: MealType;
+  date?: string;
+  onSelect?: (food: FoodItem) => void;
+  entryToReplaceId?: string; // O ID opcional
 }
 
-const MOCK_FOOD_DATABASE: FoodItens[] = [
-  { id: "1", name: "Maçã", calories: 52, unit: "1 unidade (média)" },
-  { id: "2", name: "Banana", calories: 89, unit: "1 unidade (média)" },
-  { id: "3", name: "Ovo Cozido", calories: 78, unit: "1 unidade (grande)" },
-  { id: "4", name: "Peito de Frango Grelhado", calories: 165, unit: "100g" },
-  { id: "5", name: "Arroz Branco Cozido", calories: 130, unit: "100g" },
-  { id: "6", name: "Feijão Preto Cozido", calories: 132, unit: "100g" },
-  { id: "7", name: "Pão Integral", calories: 70, unit: "1 fatia" },
-  { id: "8", name: "Queijo Minas", calories: 70, unit: "1 fatia (30g)" },
-];
-// --- Fim dos Dados Fictícios ---
-
-type FoodSearchRouteProp = RouteProp<HomeStackParamList, "FoodSearch">;
-export function FoodSearchScreen() {
+export default function FoodSearchScreen() {
   const navigation = useNavigation();
-  const route = useRoute<FoodSearchRouteProp>();
-  const { addFoodToDiary, deleteFoodFromDiary } = useDiary();
-  const { mealType, entryToReplaceId } = route.params;
-  const [searchQuery, setSearchQuery] = useState("");
+  const route = useRoute();
+  const params = route.params as RouteParams;
 
-  // Lógica de filtro
-  const filteredData = useMemo(() => {
-    if (searchQuery.trim() === "") {
-      return MOCK_FOOD_DATABASE; // Mostra tudo se a busca estiver vazia
-    }
-    return MOCK_FOOD_DATABASE.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]); // Recalcula apenas quando a busca muda
+  const { addEntry, replaceEntry } = useDiary();
 
-  // Função para lidar com a seleção
+  // Mock Data Completo
+  const foods: FoodItem[] = [
+    {
+      id: "1",
+      name: "Arroz Branco",
+      calories: 130,
+      unit: "100g",
+      protein: 2,
+      carbs: 28,
+      fats: 0,
+    },
+    {
+      id: "2",
+      name: "Feijão Carioca",
+      calories: 76,
+      unit: "1 concha",
+      protein: 5,
+      carbs: 14,
+      fats: 1,
+    },
+    {
+      id: "3",
+      name: "Peito de Frango",
+      calories: 160,
+      unit: "1 filé",
+      protein: 32,
+      carbs: 0,
+      fats: 3,
+    },
+    {
+      id: "4",
+      name: "Ovo Cozido",
+      calories: 70,
+      unit: "1 unidade",
+      protein: 6,
+      carbs: 1,
+      fats: 5,
+    },
+    {
+      id: "5",
+      name: "Banana Prata",
+      calories: 68,
+      unit: "1 unidade",
+      protein: 1,
+      carbs: 18,
+      fats: 0,
+    },
+    {
+      id: "6",
+      name: "Aveia em Flocos",
+      calories: 100,
+      unit: "30g",
+      protein: 4,
+      carbs: 17,
+      fats: 2,
+    },
+    {
+      id: "7",
+      name: "Whey Protein",
+      calories: 120,
+      unit: "1 scoop",
+      protein: 24,
+      carbs: 3,
+      fats: 1,
+    },
+  ];
+
   const handleSelectFood = (food: FoodItem) => {
-    // Se for uma substituição, delete o item antigo primeiro
-    if (entryToReplaceId) {
-      deleteFoodFromDiary(entryToReplaceId);
+    // 1. Nutricionista
+    if (params.onSelect) {
+      params.onSelect(food);
+      navigation.goBack();
+      return;
     }
 
-    // Adicione o novo item (funciona para "add" e "substitute")
-    addFoodToDiary(food, mealType as MealType);
+    // 2. Diário
+    if (params.date) {
+      const newEntry = {
+        id: Math.random().toString(), // Novo ID
+        food: food,
+        mealType: params.mealType,
+        date: params.date,
+      };
 
-    // Volte para a Home
-    navigation.goBack();
+      // Decisão: Substituir ou Adicionar?
+      if (params.entryToReplaceId) {
+        replaceEntry(params.entryToReplaceId, newEntry);
+      } else {
+        addEntry(newEntry);
+      }
+
+      navigation.goBack();
+    }
   };
 
-  // Componente para renderizar cada item na lista
-  const renderFoodItem = ({ item }: { item: FoodItens }) => (
-    <TouchableOpacity
-      style={styles.foodItem}
-      onPress={() => handleSelectFood(item)}
-    >
-      <View>
-        <Text style={styles.foodName}>{item.name}</Text>
-        <Text style={styles.foodDetails}>{item.unit}</Text>
-      </View>
-      <Text style={styles.foodCalories}>{item.calories} kcal</Text>
-    </TouchableOpacity>
-  );
-  const screenTitle = entryToReplaceId
-    ? "Substituir por:"
-    : `Adicionar em: ${mealType}`;
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text style={styles.title}>{screenTitle}</Text>
-        {/* Barra de Busca */}
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar alimento..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+  const isReplacing = !!params.entryToReplaceId;
 
-        {/* Lista de Resultados */}
-        <FlatList
-          data={filteredData}
-          renderItem={renderFoodItem}
-          keyExtractor={(item) => item.id}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>Nenhum alimento encontrado.</Text>
-          }
-        />
-      </View>
-    </SafeAreaView>
+  return (
+    <View style={styles.container}>
+      {/* Header indicativo */}
+      {isReplacing && (
+        <View style={styles.replacingHeader}>
+          <Text style={styles.replacingText}>
+            Selecione o novo alimento para substituir
+          </Text>
+        </View>
+      )}
+
+      {/* Busca (Visual) */}
+      <TextInput
+        placeholder="Buscar alimento..."
+        style={styles.searchInput}
+        placeholderTextColor={COLORS.text.light}
+      />
+
+      <FlatList
+        data={foods}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.itemCard}
+            onPress={() => handleSelectFood(item)}
+            activeOpacity={0.7}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.unit}>
+                {item.unit} • {item.calories} kcal
+              </Text>
+            </View>
+
+            {/* Muda ícone se estiver substituindo */}
+            {isReplacing ? (
+              <ArrowsLeftRightIcon
+                size={28}
+                color={COLORS.danger}
+                weight="bold"
+              />
+            ) : (
+              <PlusCircleIcon
+                size={28}
+                color={COLORS.secondary}
+                weight="fill"
+              />
+            )}
+          </TouchableOpacity>
+        )}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+    padding: SPACING.md,
+  },
+  searchInput: {
+    backgroundColor: COLORS.card,
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: SPACING.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+
+  replacingHeader: {
+    backgroundColor: "#FEF3C7",
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  replacingText: { color: "#D97706", fontWeight: "bold", fontSize: 12 },
+
+  itemCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: COLORS.card,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    elevation: 1,
+  },
+  name: { fontSize: 16, fontWeight: "600", color: COLORS.text.primary },
+  unit: { fontSize: 14, color: COLORS.text.secondary, marginTop: 2 },
+});
