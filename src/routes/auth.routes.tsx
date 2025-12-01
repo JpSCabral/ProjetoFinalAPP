@@ -2,10 +2,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "@/screens/LoginScreen";
 
-function SignUpScreen() {
-  // ... sua UI de Cadastro
-  return null;
-}
+import SignUpScreen from "@/screens/SignUpScreen";
 
 type AuthRoutesProps = {
   onLogin: () => void;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   FlatList,
@@ -6,19 +6,26 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { PlusCircleIcon, ArrowsLeftRightIcon } from "phosphor-react-native"; // Icone de troca opcional
+import {
+  PlusCircleIcon,
+  ArrowsLeftRightIcon,
+  MagnifyingGlassIcon,
+} from "phosphor-react-native";
 
+// Contextos e Tipos
 import { useDiary } from "@/contexts/DiaryContext";
 import { FoodItem, MealType } from "@/types";
 import { COLORS, SPACING } from "@/constants/theme";
+import { searchFood } from "@/services/foodApi"; // Importando o serviço que criamos acima
 
 interface RouteParams {
   mealType: MealType;
   date?: string;
   onSelect?: (food: FoodItem) => void;
-  entryToReplaceId?: string; // O ID opcional
+  entryToReplaceId?: string;
 }
 
 export default function FoodSearchScreen() {
@@ -28,91 +35,54 @@ export default function FoodSearchScreen() {
 
   const { addEntry, replaceEntry } = useDiary();
 
-  // Mock Data Completo
-  const foods: FoodItem[] = [
-    {
-      id: "1",
-      name: "Arroz Branco",
-      calories: 130,
-      unit: "100g",
-      protein: 2,
-      carbs: 28,
-      fats: 0,
-    },
-    {
-      id: "2",
-      name: "Feijão Carioca",
-      calories: 76,
-      unit: "1 concha",
-      protein: 5,
-      carbs: 14,
-      fats: 1,
-    },
-    {
-      id: "3",
-      name: "Peito de Frango",
-      calories: 160,
-      unit: "1 filé",
-      protein: 32,
-      carbs: 0,
-      fats: 3,
-    },
-    {
-      id: "4",
-      name: "Ovo Cozido",
-      calories: 70,
-      unit: "1 unidade",
-      protein: 6,
-      carbs: 1,
-      fats: 5,
-    },
-    {
-      id: "5",
-      name: "Banana Prata",
-      calories: 68,
-      unit: "1 unidade",
-      protein: 1,
-      carbs: 18,
-      fats: 0,
-    },
-    {
-      id: "6",
-      name: "Aveia em Flocos",
-      calories: 100,
-      unit: "30g",
-      protein: 4,
-      carbs: 17,
-      fats: 2,
-    },
-    {
-      id: "7",
-      name: "Whey Protein",
-      calories: 120,
-      unit: "1 scoop",
-      protein: 24,
-      carbs: 3,
-      fats: 1,
-    },
-  ];
+  // Estados
+  const [searchText, setSearchText] = useState("");
+  const [foods, setFoods] = useState<FoodItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Lógica de busca com "Debounce" (espera parar de digitar)
+  const handleSearchChange = (text: string) => {
+    setSearchText(text);
+
+    if (timer) clearTimeout(timer); // Cancela busca anterior se ainda estiver digitando
+
+    // Se limpar o texto, limpa a lista
+    if (text.length === 0) {
+      setFoods([]);
+      return;
+    }
+
+    // Só busca se tiver mais de 2 letras
+    if (text.length > 2) {
+      setLoading(true); // Mostra loading visualmente instantâneo
+      const newTimer = setTimeout(async () => {
+        const results = await searchFood(text);
+        setFoods(results);
+        setLoading(false);
+      }, 600); // Espera 600ms
+      setTimer(newTimer);
+    }
+  };
 
   const handleSelectFood = (food: FoodItem) => {
-    // 1. Nutricionista
+    // 1. Caso Nutricionista (Criação de Dieta)
     if (params.onSelect) {
       params.onSelect(food);
       navigation.goBack();
       return;
     }
 
-    // 2. Diário
+    // 2. Caso Usuário (Diário)
     if (params.date) {
       const newEntry = {
-        id: Math.random().toString(), // Novo ID
+        id: Math.random().toString(),
         food: food,
         mealType: params.mealType,
         date: params.date,
       };
 
-      // Decisão: Substituir ou Adicionar?
+      // Decide se é Substituição ou Adição
       if (params.entryToReplaceId) {
         replaceEntry(params.entryToReplaceId, newEntry);
       } else {
@@ -127,55 +97,89 @@ export default function FoodSearchScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header indicativo */}
+      {/* Aviso visual se estiver substituindo */}
       {isReplacing && (
         <View style={styles.replacingHeader}>
           <Text style={styles.replacingText}>
-            Selecione o novo alimento para substituir
+            Substituindo item na refeição: {params.mealType}
           </Text>
         </View>
       )}
 
-      {/* Busca (Visual) */}
-      <TextInput
-        placeholder="Buscar alimento..."
-        style={styles.searchInput}
-        placeholderTextColor={COLORS.text.light}
-      />
+      {/* Barra de Busca */}
+      <View style={styles.searchContainer}>
+        <MagnifyingGlassIcon size={20} color={COLORS.text.secondary} />
+        <TextInput
+          placeholder="Busque ex: Arroz, Chocolate..."
+          style={styles.searchInput}
+          placeholderTextColor={COLORS.text.light}
+          value={searchText}
+          onChangeText={handleSearchChange}
+          autoFocus
+        />
+      </View>
 
-      <FlatList
-        data={foods}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.itemCard}
-            onPress={() => handleSelectFood(item)}
-            activeOpacity={0.7}
-          >
-            <View style={{ flex: 1 }}>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.unit}>
-                {item.unit} • {item.calories} kcal
+      {/* Conteúdo: Loading ou Lista */}
+      {loading ? (
+        <View style={styles.centerState}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Buscando alimentos...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={foods}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.centerState}>
+              <Text style={styles.emptyText}>
+                {searchText.length > 0
+                  ? "Nenhum alimento encontrado."
+                  : "Digite algo para buscar online."}
               </Text>
             </View>
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.itemCard}
+              onPress={() => handleSelectFood(item)}
+              activeOpacity={0.7}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.unit}>
+                  {item.unit} •{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {Math.round(item.calories)} kcal
+                  </Text>
+                </Text>
 
-            {/* Muda ícone se estiver substituindo */}
-            {isReplacing ? (
-              <ArrowsLeftRightIcon
-                size={28}
-                color={COLORS.danger}
-                weight="bold"
-              />
-            ) : (
-              <PlusCircleIcon
-                size={28}
-                color={COLORS.secondary}
-                weight="fill"
-              />
-            )}
-          </TouchableOpacity>
-        )}
-      />
+                {/* Exibe Macros se existirem */}
+                <Text style={styles.macros}>
+                  P: {Math.round(item.protein || 0)}g C:{" "}
+                  {Math.round(item.carbs || 0)}g G: {Math.round(item.fats || 0)}
+                  g
+                </Text>
+              </View>
+
+              {/* Ícone muda dependendo da ação */}
+              {isReplacing ? (
+                <ArrowsLeftRightIcon
+                  size={28}
+                  color={COLORS.danger}
+                  weight="bold"
+                />
+              ) : (
+                <PlusCircleIcon
+                  size={28}
+                  color={COLORS.secondary}
+                  weight="fill"
+                />
+              )}
+            </TouchableOpacity>
+          )}
+        />
+      )}
     </View>
   );
 }
@@ -186,23 +190,34 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     padding: SPACING.md,
   },
-  searchInput: {
-    backgroundColor: COLORS.card,
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
 
   replacingHeader: {
     backgroundColor: "#FEF3C7",
     padding: 8,
     borderRadius: 8,
-    marginBottom: 16,
+    marginBottom: 12,
     alignItems: "center",
   },
   replacingText: { color: "#D97706", fontWeight: "bold", fontSize: 12 },
+
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.card,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 50,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
+    color: COLORS.text.primary,
+    height: "100%",
+  },
 
   itemCard: {
     flexDirection: "row",
@@ -214,6 +229,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     elevation: 1,
   },
-  name: { fontSize: 16, fontWeight: "600", color: COLORS.text.primary },
+  name: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.text.primary,
+    width: "90%",
+  },
   unit: { fontSize: 14, color: COLORS.text.secondary, marginTop: 2 },
+  macros: { fontSize: 12, color: COLORS.text.light, marginTop: 2 },
+
+  centerState: { alignItems: "center", marginTop: 40 },
+  loadingText: { color: COLORS.text.secondary, marginTop: 10 },
+  emptyText: { color: COLORS.text.light, fontSize: 16 },
 });

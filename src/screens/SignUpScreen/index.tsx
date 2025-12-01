@@ -11,7 +11,12 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { User, Envelope, Lock, ArrowLeft } from "phosphor-react-native";
+import {
+  UserIcon,
+  EnvelopeIcon,
+  LockIcon,
+  ArrowLeftIcon,
+} from "phosphor-react-native";
 
 // Usando suas cores padrão
 import { COLORS, SPACING } from "@/constants/theme";
@@ -19,14 +24,12 @@ import { COLORS, SPACING } from "@/constants/theme";
 export default function SignUpScreen() {
   const navigation = useNavigation<any>();
 
-  // Estados do Formulário
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignUp = () => {
-    // 1. Validação Simples
     if (!name || !email || !password || !confirmPassword) {
       return Alert.alert("Erro", "Por favor, preencha todos os campos.");
     }
@@ -39,11 +42,9 @@ export default function SignUpScreen() {
       return Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres.");
     }
 
-    // 2. Sucesso (Aqui entraria a chamada ao Backend/Firebase)
     Alert.alert("Sucesso", "Conta criada com sucesso!", [
       {
         text: "OK",
-        // Navega para o App Principal após cadastro
         onPress: () => navigation.replace("AppTabs"),
       },
     ]);
@@ -63,7 +64,7 @@ export default function SignUpScreen() {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <ArrowLeft size={24} color={COLORS.text.primary} />
+          <ArrowLeftIcon size={24} color={COLORS.text.primary} />
         </TouchableOpacity>
 
         {/* Cabeçalho */}
@@ -77,7 +78,7 @@ export default function SignUpScreen() {
           {/* Nome */}
           <Text style={styles.label}>Nome Completo</Text>
           <View style={styles.inputContainer}>
-            <User size={20} color={COLORS.text.light} />
+            <UserIcon size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="Ex: Maria Silva"
@@ -89,7 +90,7 @@ export default function SignUpScreen() {
           {/* E-mail */}
           <Text style={styles.label}>E-mail</Text>
           <View style={styles.inputContainer}>
-            <Envelope size={20} color={COLORS.text.light} />
+            <EnvelopeIcon size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="exemplo@email.com"
@@ -103,7 +104,7 @@ export default function SignUpScreen() {
           {/* Senha */}
           <Text style={styles.label}>Senha</Text>
           <View style={styles.inputContainer}>
-            <Lock size={20} color={COLORS.text.light} />
+            <LockIcon size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="******"
@@ -116,7 +117,7 @@ export default function SignUpScreen() {
           {/* Confirmar Senha */}
           <Text style={styles.label}>Confirmar Senha</Text>
           <View style={styles.inputContainer}>
-            <Lock size={20} color={COLORS.text.light} />
+            <LockIcon size={20} color={COLORS.text.light} />
             <TextInput
               style={styles.input}
               placeholder="******"

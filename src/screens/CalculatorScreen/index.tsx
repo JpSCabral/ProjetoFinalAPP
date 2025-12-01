@@ -15,6 +15,8 @@ import {
   CalculatorIcon,
   CheckIcon,
 } from "phosphor-react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useDiary } from "@/contexts/DiaryContext";
 
 // Tipos para os seletores
 type Gender = "male" | "female";
@@ -43,8 +45,9 @@ export default function CalculatorScreen() {
   const [height, setHeight] = useState("");
   const [age, setAge] = useState("");
   const [activity, setActivity] = useState<ActivityLevel>("sedentary");
+  const { updateGoal } = useDiary();
+  const navigation = useNavigation();
 
-  // Estado do Resultado
   const [result, setResult] = useState<number | null>(null);
 
   const handleCalculate = () => {
@@ -57,7 +60,7 @@ export default function CalculatorScreen() {
       return;
     }
 
-    // Fórmula de Harris-Benedict Revisada
+    // Fórmula de Harris-Benedict
     let bmr = 0;
     if (gender === "male") {
       bmr = 88.36 + 13.4 * w + 4.8 * h - 5.7 * a;
@@ -70,11 +73,16 @@ export default function CalculatorScreen() {
   };
 
   const handleSaveMeta = () => {
-    // Aqui você chamaria uma função do Contexto, ex: updateGoal(result)
-    Alert.alert(
-      "Sucesso",
-      `Sua meta diária foi atualizada para ${result} kcal!`
-    );
+    if (result) {
+      updateGoal(result);
+
+      Alert.alert("Sucesso!", `Sua meta foi atualizada para ${result} kcal.`, [
+        {
+          text: "OK",
+          onPress: () => navigation.goBack(), // Volta para Settings automaticamente
+        },
+      ]);
+    }
   };
 
   return (
@@ -84,7 +92,6 @@ export default function CalculatorScreen() {
         Descubra quantas calorias você gasta por dia.
       </Text>
 
-      {/* 1. SELEÇÃO DE GÊNERO */}
       <Text style={styles.label}>Gênero</Text>
       <View style={styles.row}>
         <TouchableOpacity

@@ -24,7 +24,7 @@ export default function LoginScreen({ onLogin }: Props) {
   const navigation = useNavigation<any>();
 
   // Estados
-  const [isLoading, setIsLoading] = useState(false); // Para simular o carregamento
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -69,7 +69,7 @@ export default function LoginScreen({ onLogin }: Props) {
         );
       } else {
         console.log("Cadastro bem-sucedido:", result.email);
-        onLogin?.(); // proceed to next screen
+        navigation.replace("AppTabs");
       }
     } catch (error) {
       console.error("Erro inesperado:", error);

@@ -20,7 +20,6 @@ const MacroBar = ({
   color: string;
   total?: number;
 }) => {
-  // Limita a barra a 100%
   const percentage = Math.min((value / total) * 100, 100);
 
   return (
@@ -71,12 +70,10 @@ export default function ProgressScreen() {
       d.setDate(today.getDate() - i);
       const dateKey = d.toISOString().split("T")[0];
 
-      // Soma calorias deste dia específico
       const dayCalories = entries
         .filter((e) => e.date.startsWith(dateKey))
         .reduce((sum, e) => sum + e.food.calories, 0);
 
-      // Nome do dia (ex: "Seg", "Ter")
       const dayName = new Intl.DateTimeFormat("pt-BR", { weekday: "short" })
         .format(d)
         .slice(0, 3);
@@ -86,7 +83,6 @@ export default function ProgressScreen() {
     return days;
   }, [entries]);
 
-  // Encontrar o maior valor para escalar o gráfico (evita divisão por zero)
   const maxCal = Math.max(...weeklyData.map((d) => d.value), 2000);
 
   return (

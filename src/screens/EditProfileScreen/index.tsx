@@ -15,7 +15,6 @@ import { COLORS, SPACING } from "@/constants/theme";
 export default function EditProfileScreen() {
   const navigation = useNavigation();
 
-  // Estados locais (simulando dados do usuário)
   const [name, setName] = useState("Usuário Exemplo");
   const [email, setEmail] = useState("usuario@email.com");
   const [weight, setWeight] = useState("75");
@@ -23,7 +22,6 @@ export default function EditProfileScreen() {
   const [age, setAge] = useState("25");
 
   const handleSave = () => {
-    // Aqui você chamaria sua API ou atualizaria o Contexto
     Alert.alert("Sucesso", "Perfil atualizado!", [
       { text: "OK", onPress: () => navigation.goBack() },
     ]);

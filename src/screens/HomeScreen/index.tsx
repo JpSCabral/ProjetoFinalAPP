@@ -21,7 +21,6 @@ import {
   PlugsIcon,
 } from "phosphor-react-native";
 
-// Imports internos
 import { Header } from "@/components/Header";
 import { CalorieSummary } from "@/components/CalorieSummary";
 import { MealCard } from "@/components/MealCard";
@@ -129,7 +128,6 @@ export default function HomeScreen() {
         style: "destructive",
         onPress: () => {
           removeEntry(id);
-          // Fecha modal se ficar vazio (opcional)
           if (foodsForSelectedMeal.length === 1) setIsModalVisible(false);
         },
       },

@@ -6,16 +6,17 @@ interface DiaryContextData {
   goal: number;
   addEntry: (entry: DiaryEntry) => void;
   removeEntry: (id: string) => void;
-  replaceEntry: (oldId: string, newEntry: DiaryEntry) => void; // Função de substituir
+  replaceEntry: (oldId: string, newEntry: DiaryEntry) => void;
+  updateGoal: (newGoal: number) => void;
 }
 
 const DiaryContext = createContext<DiaryContextData>({} as DiaryContextData);
 
 export function DiaryProvider({ children }: { children: ReactNode }) {
-  // Meta fixa (pode vir de config depois)
-  const [goal] = useState(2000);
+  // Estado da Meta (Começa com 2000, mas pode ser mudado)
+  const [goal, setGoal] = useState(2000);
 
-  // Dados iniciais (Mock) para não abrir o app vazio
+  // Mock Data inicial
   const today = new Date().toISOString();
   const [entries, setEntries] = useState<DiaryEntry[]>([
     {
@@ -48,26 +49,28 @@ export function DiaryProvider({ children }: { children: ReactNode }) {
     },
   ]);
 
-  // --- 1. ADICIONAR ---
   function addEntry(newEntry: DiaryEntry) {
     setEntries((prevState) => [...prevState, newEntry]);
   }
 
-  // --- 2. REMOVER ---
   function removeEntry(id: string) {
     setEntries((prevState) => prevState.filter((item) => item.id !== id));
   }
 
-  // --- 3. SUBSTITUIR ---
   function replaceEntry(oldId: string, newEntry: DiaryEntry) {
     setEntries((prevState) =>
       prevState.map((item) => (item.id === oldId ? newEntry : item))
     );
   }
 
+  // --- 2. IMPLEMENTAÇÃO DA FUNÇÃO ---
+  function updateGoal(newGoal: number) {
+    setGoal(newGoal);
+  }
+
   return (
     <DiaryContext.Provider
-      value={{ entries, goal, addEntry, removeEntry, replaceEntry }}
+      value={{ entries, goal, addEntry, removeEntry, replaceEntry, updateGoal }}
     >
       {children}
     </DiaryContext.Provider>
@@ -76,8 +79,7 @@ export function DiaryProvider({ children }: { children: ReactNode }) {
 
 export function useDiary() {
   const context = useContext(DiaryContext);
-  if (!context) {
+  if (!context)
     throw new Error("useDiary deve ser usado dentro de um DiaryProvider");
-  }
   return context;
 }

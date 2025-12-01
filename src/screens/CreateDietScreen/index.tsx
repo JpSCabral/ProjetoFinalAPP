@@ -18,7 +18,6 @@ import {
 import { COLORS, SPACING } from "@/constants/theme";
 import { MealType, FoodItem } from "@/types";
 
-// Estrutura local para montar a dieta
 interface DietPlanItem {
   meal: MealType;
   foods: FoodItem[];
@@ -29,15 +28,12 @@ const MEALS: MealType[] = ["Café da manha", "Almoço", "Lanche", "Jantar"];
 export default function CreateDietScreen() {
   const navigation = useNavigation<any>();
 
-  // Estado do Paciente (Simulado)
   const [patientName, setPatientName] = useState("");
 
-  // Estado da Dieta: Inicializa com as refeições vazias
   const [dietPlan, setDietPlan] = useState<DietPlanItem[]>(
     MEALS.map((meal) => ({ meal, foods: [] }))
   );
 
-  // Função chamada quando a FoodSearchScreen retorna um alimento
   const handleAddFood = (meal: MealType, food: FoodItem) => {
     setDietPlan((prev) =>
       prev.map((item) => {
@@ -49,11 +45,10 @@ export default function CreateDietScreen() {
     );
   };
 
-  // Abre a busca passando o callback
   const openSearch = (meal: MealType) => {
     navigation.navigate("FoodSearch", {
       mealType: meal,
-      onSelect: (selectedFood: FoodItem) => handleAddFood(meal, selectedFood), // <--- O PULO DO GATO
+      onSelect: (selectedFood: FoodItem) => handleAddFood(meal, selectedFood),
     });
   };
 
