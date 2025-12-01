@@ -17,7 +17,7 @@ import { signUp } from "@/api/supabase";
 
 import { COLORS, SPACING } from "@/constants/theme";
 type Props = {
-  onLogin: () => void;
+  onLogin?: () => void;
 };
 
 export default function LoginScreen({ onLogin }: Props) {
@@ -69,7 +69,7 @@ export default function LoginScreen({ onLogin }: Props) {
         );
       } else {
         console.log("Cadastro bem-sucedido:", result.email);
-        onLogin(); // proceed to next screen
+        onLogin?.(); // proceed to next screen
       }
     } catch (error) {
       console.error("Erro inesperado:", error);
