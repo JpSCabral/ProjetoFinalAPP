@@ -1,186 +1,47 @@
 {
-    "diets": [
-      {
-        "id": "diet_001",
-        "name": "Cutting Diet",
-        "description": "Low-calorie diet focused on fat loss.",
-        "meals": [
-          {
-            "id": "meal_001",
-            "diet_id": "diet_001",
-            "name": "Breakfast",
-            "total_calories": 380,
-            "foods": [
-              {
-                "id": "food_001",
-                "meal_id": "meal_001",
-                "name": "Scrambled Eggs",
-                "quantity": "2 units",
-                "calories": 140
-              },
-              {
-                "id": "food_002",
-                "meal_id": "meal_001",
-                "name": "Oatmeal",
-                "quantity": "50g",
-                "calories": 190
-              },
-              {
-                "id": "food_003",
-                "meal_id": "meal_001",
-                "name": "Black Coffee",
-                "quantity": "200ml",
-                "calories": 0
-              }
-            ]
-          },
-          {
-            "id": "meal_002",
-            "diet_id": "diet_001",
-            "name": "Lunch",
-            "total_calories": 560,
-            "foods": [
-              {
-                "id": "food_004",
-                "meal_id": "meal_002",
-                "name": "Grilled Chicken Breast",
-                "quantity": "150g",
-                "calories": 250
-              },
-              {
-                "id": "food_005",
-                "meal_id": "meal_002",
-                "name": "Brown Rice",
-                "quantity": "100g",
-                "calories": 180
-              },
-              {
-                "id": "food_006",
-                "meal_id": "meal_002",
-                "name": "Broccoli",
-                "quantity": "100g",
-                "calories": 50
-              }
-            ]
-          },
-          {
-            "id": "meal_003",
-            "diet_id": "diet_001",
-            "name": "Dinner",
-            "total_calories": 420,
-            "foods": [
-              {
-                "id": "food_007",
-                "meal_id": "meal_003",
-                "name": "Tuna Salad",
-                "quantity": "200g",
-                "calories": 200
-              },
-              {
-                "id": "food_008",
-                "meal_id": "meal_003",
-                "name": "Sweet Potato",
-                "quantity": "150g",
-                "calories": 180
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "diet_002",
-        "name": "Bulking Diet",
-        "description": "High-calorie diet focused on muscle gain.",
-        "meals": [
-          {
-            "id": "meal_004",
-            "diet_id": "diet_002",
-            "name": "Breakfast",
-            "total_calories": 650,
-            "foods": [
-              {
-                "id": "food_009",
-                "meal_id": "meal_004",
-                "name": "Whole Eggs",
-                "quantity": "3 units",
-                "calories": 210
-              },
-              {
-                "id": "food_010",
-                "meal_id": "meal_004",
-                "name": "Peanut Butter Toast",
-                "quantity": "2 slices",
-                "calories": 300
-              },
-              {
-                "id": "food_011",
-                "meal_id": "meal_004",
-                "name": "Banana",
-                "quantity": "1 unit",
-                "calories": 100
-              }
-            ]
-          },
-          {
-            "id": "meal_005",
-            "diet_id": "diet_002",
-            "name": "Lunch",
-            "total_calories": 850,
-            "foods": [
-              {
-                "id": "food_012",
-                "meal_id": "meal_005",
-                "name": "Beef Steak",
-                "quantity": "200g",
-                "calories": 400
-              },
-              {
-                "id": "food_013",
-                "meal_id": "meal_005",
-                "name": "Mashed Potatoes",
-                "quantity": "200g",
-                "calories": 300
-              },
-              {
-                "id": "food_014",
-                "meal_id": "meal_005",
-                "name": "Green Beans",
-                "quantity": "100g",
-                "calories": 60
-              }
-            ]
-          },
-          {
-            "id": "meal_006",
-            "diet_id": "diet_002",
-            "name": "Dinner",
-            "total_calories": 720,
-            "foods": [
-              {
-                "id": "food_015",
-                "meal_id": "meal_006",
-                "name": "Salmon Fillet",
-                "quantity": "150g",
-                "calories": 350
-              },
-              {
-                "id": "food_016",
-                "meal_id": "meal_006",
-                "name": "Quinoa",
-                "quantity": "100g",
-                "calories": 220
-              },
-              {
-                "id": "food_017",
-                "meal_id": "meal_006",
-                "name": "Avocado",
-                "quantity": "50g",
-                "calories": 150
-              }
-            ]
-          }
-        ]
+  "goal": 2200,
+  "entries": [
+    {
+      "id": "1",
+      "date": "2025-12-02",
+      "mealType": "Café da manha",
+      "food": {
+        "id": "101",
+        "name": "Banana",
+        "calories": 90,
+        "unit": "1 unidade",
+        "protein": 1,
+        "carbs": 23,
+        "fats": 0
       }
-    ]
-  }
-  
+    },
+    {
+      "id": "2",
+      "date": "2025-12-02",
+      "mealType": "Almoço",
+      "food": {
+        "id": "102",
+        "name": "Arroz",
+        "calories": 130,
+        "unit": "100g",
+        "protein": 2,
+        "carbs": 28,
+        "fats": 0
+      }
+    },
+    {
+      "id": "3",
+      "date": "2025-12-02",
+      "mealType": "Lanche",
+      "food": {
+        "id": "103",
+        "name": "Pão",
+        "calories": 130,
+        "unit": "100g",
+        "protein": 2,
+        "carbs": 28,
+        "fats": 0
+      }
+    }
+  ]
+}

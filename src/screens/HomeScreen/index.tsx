@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Modal,
   ScrollView,
@@ -13,146 +13,104 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
-  CoffeeIcon,
   ForkKnifeIcon,
-  AppleLogoIcon,
-  PlusIcon,
-  TrashIcon,
   PlugsIcon,
+  TrashIcon,
 } from "phosphor-react-native";
 
 import { Header } from "@/components/Header";
 import { CalorieSummary } from "@/components/CalorieSummary";
-import { MealCard } from "@/components/MealCard";
 import { DateNavigator } from "@/components/DateNavigator";
+import { MealCard } from "@/components/MealCard";
 import { useDiary } from "@/contexts/DiaryContext";
-import { MealType } from "@/types";
 import { COLORS, SPACING } from "@/constants/theme";
 
-const MEAL_SECTIONS: { id: MealType; label: string; icon: any }[] = [
-  { id: "Café da manha", label: "Café da manhã", icon: CoffeeIcon },
-  { id: "Almoço", label: "Almoço", icon: ForkKnifeIcon },
-  { id: "Lanche", label: "Lanche", icon: AppleLogoIcon },
-  { id: "Jantar", label: "Jantar", icon: ForkKnifeIcon },
-];
-
-// Helper de Data
+// Helper de data
 const getFormattedDateLabel = (date: Date) => {
   const today = new Date();
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
-  const t = new Date(today);
-  t.setHours(0, 0, 0, 0);
-  const diffTime = d.getTime() - t.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  today.setHours(0, 0, 0, 0);
 
-  if (diffDays === 0) return "Hoje";
-  if (diffDays === -1) return "Ontem";
-  if (diffDays === 1) return "Amanhã";
-  const days = [
-    "Domingo",
-    "Segunda-feira",
-    "Terça-feira",
-    "Quarta-feira",
-    "Quinta-feira",
-    "Sexta-feira",
-    "Sábado",
-  ];
-  return days[d.getDay()];
+  const diff = d.getTime() - today.getTime();
+  const days = diff / (1000 * 60 * 60 * 24);
+
+  if (days === 0) return "Hoje";
+  if (days === -1) return "Ontem";
+  if (days === 1) return "Amanhã";
+
+  return d.toLocaleDateString("pt-BR", { weekday: "long" });
 };
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
-  const { entries, goal, removeEntry } = useDiary();
+  const { entries, meals } = useDiary();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedMeal, setSelectedMeal] = useState<MealType | null>(null);
 
-  // Filtros
-  const entriesForDate = useMemo(() => {
-    const dateKey = selectedDate.toISOString().split("T")[0];
-    return entries.filter((e) => e.date && e.date.startsWith(dateKey));
-  }, [entries, selectedDate]);
+  // Agora é string | null
+  const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
 
+  // Como meal_foods ainda não tem campo date, não filtramos por data
+  const entriesForDate = entries;
+
+  // Agrupa calorias por refeição usando IDs reais do Supabase
   const caloriesByMeal = useMemo(() => {
-    const totals: Record<string, number> = {
-      "Café da manha": 0,
-      Almoço: 0,
-      Lanche: 0,
-      Jantar: 0,
-    };
-    entriesForDate.forEach((entry) => {
-      if (totals[entry.mealType] !== undefined) {
-        totals[entry.mealType] += entry.food.calories;
+    const totals: Record<string, number> = {};
+
+    meals.forEach(m => (totals[m.id] = 0));
+
+    entriesForDate.forEach((e) => {
+      if (totals[e.mealType] != null) {
+        totals[e.mealType] += e.food.calories * e.quantity;
       }
     });
-    return totals;
-  }, [entriesForDate]);
 
-  const totalConsumed = Object.values(caloriesByMeal).reduce(
-    (a, b) => a + b,
-    0
-  );
+    return totals;
+  }, [entriesForDate, meals]);
+
+  const totalConsumed = Object.values(caloriesByMeal).reduce((a, b) => a + b, 0);
 
   const foodsForSelectedMeal = useMemo(() => {
     if (!selectedMeal) return [];
-    return entriesForDate.filter((entry) => entry.mealType === selectedMeal);
-  }, [entriesForDate, selectedMeal]);
+    return entries.filter((e) => e.mealType === selectedMeal);
+  }, [entries, selectedMeal]);
 
-  // Ações
   const changeDate = (days: number) => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() + days);
-    setSelectedDate(newDate);
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() + days);
+    setSelectedDate(d);
   };
 
-  const handleAddFood = (mealType: MealType) => {
+  const handleAddFood = (mealId: string) => {
     navigation.navigate("FoodSearch", {
-      mealType,
+      mealType: mealId,
       date: selectedDate.toISOString(),
     });
   };
 
-  const handleShowDetails = (mealType: MealType) => {
-    setSelectedMeal(mealType);
+  const handleShowDetails = (mealId: string) => {
+    setSelectedMeal(mealId);
     setIsModalVisible(true);
-  };
-
-  // --- LÓGICA DE REMOVER ---
-  const handleRemoveItem = (id: string) => {
-    Alert.alert("Remover", "Deseja excluir este alimento?", [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Excluir",
-        style: "destructive",
-        onPress: () => {
-          removeEntry(id);
-          if (foodsForSelectedMeal.length === 1) setIsModalVisible(false);
-        },
-      },
-    ]);
   };
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
 
   return (
     <View style={styles.container}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor="transparent"
-        translucent
-      />
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+
       <View style={styles.greenBackground} />
+
       <Header />
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        overScrollMode="never"
+        contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.summaryWrapper}>
-          <CalorieSummary consumed={totalConsumed} goal={goal} />
+          <CalorieSummary consumed={totalConsumed} goal={2000} />
         </View>
 
         <DateNavigator
@@ -161,31 +119,42 @@ export default function HomeScreen() {
           onNextDay={() => changeDate(1)}
         />
 
+        {/* --- REFLEXÃO DINÂMICA --- */}
         <View style={styles.mealsContainer}>
-          {MEAL_SECTIONS.map((meal) => (
-            <MealCard
-              key={meal.id}
-              mealName={meal.label}
-              calories={caloriesByMeal[meal.id] || 0}
-              icon={<meal.icon size={24} color={COLORS.text.secondary} />}
-              onAddPress={() => handleAddFood(meal.id)}
-              onDetailPress={() => handleShowDetails(meal.id)}
-            />
-          ))}
+          {meals.map((meal) => {
+            const mealItems = entries.filter((e) => e.mealType === meal.id);
+            const total = mealItems.reduce(
+              (acc, it) => acc + it.food.calories * it.quantity,
+              0
+            );
+
+            return (
+              <MealCard
+                key={meal.id}
+                mealName={meal.name}
+                calories={total}
+                icon={<ForkKnifeIcon size={24} color={COLORS.text.secondary} />}
+                onAddPress={() => handleAddFood(meal.id)}
+                onDetailPress={() => handleShowDetails(meal.id)}
+              />
+            );
+          })}
         </View>
       </ScrollView>
 
-      {/* --- MODAL DE DETALHES --- */}
+      {/* --- MODAL --- */}
       <Modal
+        transparent
         animationType="fade"
-        transparent={true}
         visible={isModalVisible}
         onRequestClose={toggleModal}
       >
         <Pressable style={styles.modalOverlay} onPress={toggleModal}>
           <Pressable style={styles.modalContent} onPress={() => {}}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{selectedMeal}</Text>
+              <Text style={styles.modalTitle}>
+                {meals.find((m) => m.id === selectedMeal)?.name ?? "Refeição"}
+              </Text>
               <TouchableOpacity onPress={toggleModal}>
                 <Text style={styles.closeText}>Fechar</Text>
               </TouchableOpacity>
@@ -200,13 +169,12 @@ export default function HomeScreen() {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.foodItem}
-                  // --- CLICK NA LINHA: SUBSTITUIR ---
                   onPress={() => {
-                    setIsModalVisible(false);
+                    toggleModal();
                     navigation.navigate("FoodSearch", {
                       mealType: selectedMeal,
                       date: selectedDate.toISOString(),
-                      entryToReplaceId: item.id, // Manda o ID pra trocar
+                      entryToReplaceId: item.id,
                     });
                   }}
                 >
@@ -220,11 +188,7 @@ export default function HomeScreen() {
                       {item.food.calories} kcal
                     </Text>
 
-                    {/* --- CLICK NA LIXEIRA: REMOVER --- */}
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => handleRemoveItem(item.id)}
-                    >
+                    <TouchableOpacity style={styles.deleteButton}>
                       <TrashIcon size={20} color={COLORS.danger} />
                     </TouchableOpacity>
                   </View>
@@ -239,7 +203,7 @@ export default function HomeScreen() {
                 if (selectedMeal) handleAddFood(selectedMeal);
               }}
             >
-              <PlugsIcon size={20} color="#FFF" style={{ marginRight: 8 }} />
+              <PlugsIcon size={20} color="#FFF" />
               <Text style={styles.addButtonText}>Adicionar</Text>
             </TouchableOpacity>
           </Pressable>
@@ -258,13 +222,11 @@ const styles = StyleSheet.create({
     right: 0,
     height: 180,
     backgroundColor: COLORS.primary,
-    zIndex: 0,
   },
   scrollContent: { paddingBottom: 100 },
   summaryWrapper: { paddingHorizontal: SPACING.md, marginTop: SPACING.md },
   mealsContainer: { paddingHorizontal: SPACING.md, gap: SPACING.md },
 
-  // Modal Styles
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -282,36 +244,39 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: SPACING.md,
   },
-  modalTitle: { fontSize: 20, fontWeight: "bold", color: COLORS.text.primary },
+  modalTitle: { fontSize: 20, fontWeight: "bold" },
   closeText: { color: COLORS.text.secondary },
   emptyText: {
     textAlign: "center",
     color: COLORS.text.light,
-    marginVertical: 20,
+    marginTop: 20,
   },
 
-  // Estilo do Item no Modal
   foodItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     paddingVertical: SPACING.md,
     borderBottomWidth: 1,
     borderColor: COLORS.border,
+    alignItems: "center",
   },
-  foodName: { fontSize: 16, fontWeight: "500", color: COLORS.text.primary },
-  foodUnit: { fontSize: 14, color: COLORS.text.secondary },
-  foodActions: { flexDirection: "row", alignItems: "center", gap: SPACING.md },
+  foodName: { fontSize: 16, fontWeight: "600", color: COLORS.text.primary },
+  foodUnit: { fontSize: 13, color: COLORS.text.secondary },
+  foodActions: { flexDirection: "row", alignItems: "center", gap: 12 },
   foodCalories: { fontSize: 16, fontWeight: "bold", color: COLORS.primary },
-  deleteButton: { padding: 4, backgroundColor: "#FEF2F2", borderRadius: 8 },
+  deleteButton: {
+    backgroundColor: "#FEF2F2",
+    padding: 6,
+    borderRadius: 8,
+  },
 
   addButtonModal: {
     backgroundColor: COLORS.primary,
     padding: SPACING.md,
-    borderRadius: 8,
+    borderRadius: 10,
     flexDirection: "row",
     justifyContent: "center",
     marginTop: SPACING.md,
   },
-  addButtonText: { color: "#FFF", fontWeight: "bold" },
+  addButtonText: { color: "#FFF", marginLeft: 8, fontWeight: "bold" },
 });

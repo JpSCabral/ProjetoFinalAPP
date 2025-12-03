@@ -1,85 +1,153 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
-import { DiaryEntry } from "@/types";
+// src/contexts/DiaryContext.tsx
+import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "@/api/supabase";
+import { MealDefinition, DiaryEntry } from "@/types";
 
 interface DiaryContextData {
+  meals: MealDefinition[];
   entries: DiaryEntry[];
-  goal: number;
-  addEntry: (entry: DiaryEntry) => void;
-  removeEntry: (id: string) => void;
-  replaceEntry: (oldId: string, newEntry: DiaryEntry) => void;
-  updateGoal: (newGoal: number) => void;
+  fetchAll: () => Promise<void>;
 }
 
 const DiaryContext = createContext<DiaryContextData>({} as DiaryContextData);
 
-export function DiaryProvider({ children }: { children: ReactNode }) {
-  // Estado da Meta (Começa com 2000, mas pode ser mudado)
-  const [goal, setGoal] = useState(2000);
+export function DiaryProvider({ children }: any) {
+  const [meals, setMeals] = useState<MealDefinition[]>([]);
+  const [entries, setEntries] = useState<DiaryEntry[]>([]);
 
-  // Mock Data inicial
-  const today = new Date().toISOString();
-  const [entries, setEntries] = useState<DiaryEntry[]>([
-    {
-      id: "1",
-      date: today,
-      mealType: "Café da manha",
-      food: {
-        id: "f1",
-        name: "Pão Francês",
-        calories: 140,
-        unit: "1 un",
-        protein: 4,
-        carbs: 28,
-        fats: 0,
-      },
-    },
-    {
-      id: "2",
-      date: today,
-      mealType: "Almoço",
-      food: {
-        id: "f2",
-        name: "Frango Grelhado",
-        calories: 160,
-        unit: "150g",
-        protein: 30,
-        carbs: 0,
-        fats: 4,
-      },
-    },
-  ]);
+  async function fetchAll() {
+    console.log("🔄 Executando fetchAll()...");
 
-  function addEntry(newEntry: DiaryEntry) {
-    setEntries((prevState) => [...prevState, newEntry]);
+    // 1) obter usuário atual
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+
+    if (!user) {
+      console.log("❌ Nenhum usuário logado, cancelando fetchAll()");
+      return;
+    }
+
+    console.log("👤 Usuário:", user.id);
+
+    // 2) obter dieta
+    const { data: diet, error: dietError } = await supabase
+      .from("diets")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (dietError) {
+      console.error("❌ Erro ao obter dieta:", dietError);
+      return;
+    }
+    if (!diet) {
+      console.log("⚠ Usuario sem dieta cadastrada.");
+      return;
+    }
+
+    console.log("🥗 Dieta:", diet.id);
+
+    // 3) meals
+    const { data: mealsData, error: mealsError } = await supabase
+      .from("meals")
+      .select("id, name, total_calories")
+      .eq("diet_id", diet.id);
+
+    if (mealsError) {
+      console.error("❌ Erro ao obter meals:", mealsError);
+      setMeals([]);
+    } else {
+      setMeals((mealsData as any[]) || []);
+    }
+
+    // 4) meal_foods
+    const { data: mf, error: mfError } = await supabase
+      .from("meal_foods")
+      .select(`
+        id,
+        quantity,
+        created_at,
+        meal_id,
+        foods:foods (
+          id,
+          name,
+          calories,
+          unit,
+          protein,
+          carbs,
+          fats
+        )
+      `);
+
+    if (mfError) {
+      console.error("❌ Erro ao obter meal_foods:", mfError);
+      setEntries([]);
+      return;
+    }
+
+    // 5) formatar
+    const formatted: DiaryEntry[] = (mf as any[])
+      .filter((row) => row && row.foods) // garante que existe foods
+      .map((row) => {
+        const foodObj = row.foods;
+        // montar objeto no shape esperado pelo seu types.ts
+        const entry: Partial<DiaryEntry> = {
+          id: String(row.id),
+          // aqui usamos meal name (se quiser manter id, ajuste seu types)
+          mealType: String(row.meal_id),
+          // caso seu DiaryEntry ainda exija "date", você pode usar created_at
+          // se não tiver date no types, remova essa linha
+          ...(row.created_at ? { date: row.created_at } : {}),
+          food: {
+            id: String(foodObj.id),
+            name: String(foodObj.name),
+            unit: String(foodObj.unit ?? ""),
+            calories: Number(foodObj.calories ?? 0),
+            protein: foodObj.protein ?? undefined,
+            carbs: foodObj.carbs ?? undefined,
+            fats: foodObj.fats ?? undefined,
+          },
+        };
+
+        return entry as DiaryEntry;
+      });
+
+    setEntries(formatted);
   }
 
-  function removeEntry(id: string) {
-    setEntries((prevState) => prevState.filter((item) => item.id !== id));
-  }
 
-  function replaceEntry(oldId: string, newEntry: DiaryEntry) {
-    setEntries((prevState) =>
-      prevState.map((item) => (item.id === oldId ? newEntry : item))
+  // 🟢 OUVIR LOGIN / LOGOUT
+  useEffect(() => {
+    console.log("👂 Instalando listener de autenticação...");
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("⚡ Auth event:", event);
+
+        if (session?.user) {
+          console.log("🔐 Usuário autenticado:", session.user.id);
+          await fetchAll();
+        } else {
+          console.log("🚪 Usuário deslogado. Limpando estado.");
+          setMeals([]);
+          setEntries([]);
+        }
+      }
     );
-  }
 
-  // --- 2. IMPLEMENTAÇÃO DA FUNÇÃO ---
-  function updateGoal(newGoal: number) {
-    setGoal(newGoal);
-  }
+    return () => {
+      console.log("🔌 Removendo auth listener.");
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
-    <DiaryContext.Provider
-      value={{ entries, goal, addEntry, removeEntry, replaceEntry, updateGoal }}
-    >
+    <DiaryContext.Provider value={{ meals, entries, fetchAll }}>
       {children}
     </DiaryContext.Provider>
   );
 }
 
 export function useDiary() {
-  const context = useContext(DiaryContext);
-  if (!context)
-    throw new Error("useDiary deve ser usado dentro de um DiaryProvider");
-  return context;
+  return useContext(DiaryContext);
 }

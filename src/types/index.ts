@@ -1,39 +1,33 @@
-// Tipagem do Alimento
-export interface FoodItem {
+// ---------------------------
+// FOOD
+// ---------------------------
+export interface Food {
   id: string;
   name: string;
-  calories: number;
   unit: string;
-  // Macros (Opcionais, pois nem sempre teremos esses dados)
+  calories: number;
   protein?: number;
   carbs?: number;
   fats?: number;
 }
 
-// Tipagem dos Tipos de Refeição
-export type MealType = 'Café da manha' | 'Almoço' | 'Lanche' | 'Jantar';
+// ---------------------------
+// MEAL (Café da manhã, Almoço...)
+// mas dinâmica, vinda do Supabase
+// ---------------------------
+export interface MealDefinition {
+  id: string;        // meal.id
+  name: string;      // meal.name
+  total_calories?: number;
+}
 
-// Tipagem da Entrada no Diário (O registro em si)
+// ---------------------------
+// DIARY ENTRY (item consumido)
+// ---------------------------
 export interface DiaryEntry {
-  id: string;
-  food: FoodItem;
-  mealType: MealType;
-  date: string; // Formato ISO String (ex: "2023-11-25T12:00:00.000Z")
+  id: string;        // meal_food id
+  mealType: string;  // meal_id
+  quantity: number;
+  food: Food;        // objeto foods do Supabase
 }
 
-// Tipagem para o componente de Lista de Compras
-export interface ShoppingItem {
-  id: string;
-  name: string;
-  quantity: string;
-  category: string;
-  isBought: boolean;
-}
-
-// Tipagem auxiliar para gráficos (se precisar usar isoladamente)
-export interface MacroData {
-  label: string;
-  current: number;
-  total: number;
-  color: string;
-}
