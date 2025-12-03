@@ -5,7 +5,6 @@ import { COLORS, SPACING } from "@/constants/theme";
 import { ShoppingItem } from "@/types";
 import ShoppingListItem from "@/components/ShopListItem";
 
-// --- MOCK DATA (Isso virá do seu Backend futuramente) ---
 const MOCK_SHOPPING_LIST: ShoppingItem[] = [
   {
     id: "1",
@@ -61,17 +60,14 @@ const MOCK_SHOPPING_LIST: ShoppingItem[] = [
 export default function ShopScreen() {
   const [items, setItems] = useState<ShoppingItem[]>(MOCK_SHOPPING_LIST);
 
-  // --- Função para marcar/desmarcar (Conectar API aqui depois) ---
   const handleToggleItem = (id: string) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, isBought: !item.isBought } : item
       )
     );
-    // TODO: Adicionar chamada de API aqui: await api.patch(`/shopping/${id}`, { isBought: ... })
   };
 
-  // --- Cálculos de Progresso ---
   const stats = useMemo(() => {
     const total = items.length;
     const bought = items.filter((i) => i.isBought).length;
