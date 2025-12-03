@@ -14,7 +14,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 
 export async function signUp(email: string, password: string): Promise<SignUpResult> {
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
